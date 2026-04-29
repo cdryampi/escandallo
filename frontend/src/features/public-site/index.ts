@@ -1,0 +1,5 @@
+export { HomePage } from '@/features/public-site/pages/home-page'
+export { MenuPage } from '@/features/public-site/pages/menu-page'
+export { ContactPage } from '@/features/public-site/pages/contact-page'
+export { LegalPage } from '@/features/public-site/pages/legal-page'
+export { PrivacyPage } from '@/features/public-site/pages/privacy-page'

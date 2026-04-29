@@ -1,0 +1,8 @@
+.agents/
+.codex/
+.env
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+cookies.txt
