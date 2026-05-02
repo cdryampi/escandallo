@@ -1,4 +1,5 @@
 export * from './pages/cms-pages-page'
+export * from './pages/cms-inbox-page'
 export * from './layouts/cms-editor-layout'
 export * from './pages/cms-editor-content-page'
 export * from './pages/cms-editor-seo-page'

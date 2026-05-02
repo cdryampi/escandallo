@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect } from 'react'
 import { useForm, useWatch, Controller } from 'react-hook-form'
 import { SeoSettingsSchema, type SeoSettingsValues } from '../schemas/cms.schema'
 import { MediaPicker } from './MediaPicker'
@@ -26,6 +27,21 @@ export const SeoSettingsForm = ({ defaultValues, onSubmit, onCancel }: Props) =>
   const metaTitle = useWatch({ control: form.control, name: 'meta_title' })
   const metaDescription = useWatch({ control: form.control, name: 'meta_description' })
 
+  useEffect(() => {
+    form.reset({
+      meta_title: defaultValues.meta_title ?? '',
+      meta_description: defaultValues.meta_description ?? '',
+      meta_image_url: defaultValues.meta_image_url ?? '',
+      show_in_menu: !!defaultValues.show_in_menu,
+    })
+  }, [
+    defaultValues.meta_description,
+    defaultValues.meta_image_url,
+    defaultValues.meta_title,
+    defaultValues.show_in_menu,
+    form,
+  ])
+
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
       <div className="space-y-4">
@@ -35,7 +51,7 @@ export const SeoSettingsForm = ({ defaultValues, onSubmit, onCancel }: Props) =>
             {metaTitle?.length || 0}/60
           </span>
         </div>
-        <Input {...form.register('meta_title')} placeholder="Ej: Inicio | Escandallo" className="bg-white h-11 shadow-sm" />
+        <Input {...form.register('meta_title')} placeholder="Ej: Inicio | Restaurante" className="bg-white h-11 shadow-sm" />
         {form.formState.errors.meta_title ? <p className="ui-field-error mt-2">{form.formState.errors.meta_title.message}</p> : null}
       </div>
 

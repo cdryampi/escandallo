@@ -18,10 +18,15 @@ export const Sidebar = () => {
       )}
     >
       <div className="flex h-16 items-center justify-between px-4 border-b border-brand-foreground/10">
-        <div className={cn('overflow-hidden transition-all duration-300', sidebarOpen ? 'w-auto opacity-100' : 'w-0 opacity-0')}>
+        <div className={cn('flex items-center gap-3 overflow-hidden transition-all duration-300', sidebarOpen ? 'w-auto opacity-100' : 'w-0 opacity-0')}>
+          <div className="size-8 bg-brand-muted rounded-lg flex items-center justify-center shrink-0 shadow-sm">
+            <svg className="w-5 h-5 text-brand-strong" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+            </svg>
+          </div>
           <div className="flex flex-col">
-            <span className="type-label-md text-brand-muted leading-tight">Escandallo</span>
-            <span className="type-headline-sm text-brand-foreground font-semibold tracking-tight">OPERACIONES</span>
+            <span className="type-label-md text-brand-muted leading-tight tracking-widest font-black">ESCANDALLO</span>
+            <span className="type-headline-sm text-brand-foreground font-bold tracking-tight">PRO</span>
           </div>
         </div>
         <Button 

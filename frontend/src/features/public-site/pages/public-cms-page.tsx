@@ -67,8 +67,8 @@ export const PublicCmsPage = ({ slug: propSlug }: Props) => {
   }
 
   const metaImageUrl = resolveMediaUrl(data.meta_image_url)
-  const metaDescription = data.meta_description || 'Contenido editorial de Escandallo.'
-  const title = data.meta_title || `${data.name} | Escandallo`
+  const metaDescription = data.meta_description || 'Contenido gastronómico y eventos.'
+  const title = data.meta_title || `${data.name}`
 
   return (
     <div className="flex min-h-screen flex-col bg-background animate-in fade-in duration-500">
@@ -85,7 +85,7 @@ export const PublicCmsPage = ({ slug: propSlug }: Props) => {
         {metaImageUrl ? <meta name="twitter:image" content={metaImageUrl} /> : null}
       </Helmet>
 
-      <CmsRenderer blocks={data.blocks || []} />
+      <CmsRenderer blocks={data.blocks || []} pageId={data.id} />
     </div>
   )
 }

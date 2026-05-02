@@ -10,53 +10,54 @@ use Illuminate\Support\Facades\Gate;
 
 class PageController extends Controller
 {
-    /**
-     * Get menu items for public site.
-     */
     public function menu(): JsonResponse
     {
-        $pages = Page::where('is_active', true)
+        $pages = Page::query()
+            ->where('is_active', true)
             ->where('show_in_menu', true)
             ->orderBy('id')
             ->get(['slug', 'name']);
 
         return response()->json([
-            'data' => $pages->map(fn ($page) => [
+            'data' => $pages->map(fn (Page $page) => [
                 'slug' => $page->slug === 'home' ? '/' : "/{$page->slug}",
                 'label' => $page->name,
             ]),
         ]);
     }
 
-    /**
-     * Get the published version (or draft if preview) of a page by its slug.
-     */
     public function show(Request $request, string $slug): PagePublicResource
     {
         $preview = $request->boolean('preview');
 
-        $query = Page::where('slug', $slug);
+        $query = Page::query()
+            ->where('slug', $slug)
+            ->with(['publishedVersion', 'draftVersion']);
 
         if (! $preview) {
             $query->where('is_active', true);
         }
 
-        $page = $query->with(['publishedVersion', 'draftVersion'])->firstOrFail();
+        $page = $query->firstOrFail();
 
         if ($preview) {
-            // Preview requires admin/editor permissions
-            Gate::authorize('update', $page);
+            $user = auth('sanctum')->user();
 
-            if (! $page->draftVersion) {
-                abort(404, 'Page has no draft version for preview');
+            if ($user !== null) {
+                Gate::forUser($user)->authorize('update', $page);
             }
 
-            // Temporary swap draft to published for the resource to work seamlessly
-            $page->setRelation('publishedVersion', $page->draftVersion);
+            if ($user !== null && $page->draftVersion) {
+                $page->setRelation('publishedVersion', $page->draftVersion);
+            }
         } else {
             if (! $page->publishedVersion) {
                 abort(404, 'Page has no published version');
             }
+        }
+
+        if (! $preview && ! $page->publishedVersion) {
+            abort(404, 'Page has no published version');
         }
 
         return new PagePublicResource($page);

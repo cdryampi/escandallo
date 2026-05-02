@@ -15,6 +15,28 @@ export interface DashboardMetrics {
   active_suppliers: number
   ingredients_with_images: number
   recipes_with_images: number
+  avg_cost_per_plate: number
+  avg_profit_margin: number
+  ingredients_in_alert_count: number
+  latest_recipes: Array<{
+    id: number
+    name: string
+    updated_at: string
+    cost: number
+    margin: number
+    status: 'draft' | 'active' | 'archived'
+  }>
+  cms: {
+    total_pages: number
+    active_pages: number
+    pages_with_draft: number
+    published_pages: number
+    contact_submissions: {
+      new: number
+      read: number
+      resolved: number
+    }
+  }
 }
 
 export const dashboardApi = {

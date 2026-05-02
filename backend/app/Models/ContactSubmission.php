@@ -5,15 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class PageVersion extends Model
+class ContactSubmission extends Model
 {
     protected $fillable = [
         'page_id',
+        'name',
+        'email',
+        'subject',
+        'message',
         'status',
-        'version_number',
-        'blocks',
-        'created_by',
-        'published_at',
+        'read_at',
+        'resolved_at',
     ];
 
     /**
@@ -22,18 +24,13 @@ class PageVersion extends Model
     protected function casts(): array
     {
         return [
-            'blocks' => 'array',
-            'published_at' => 'datetime',
+            'read_at' => 'datetime',
+            'resolved_at' => 'datetime',
         ];
     }
 
     public function page(): BelongsTo
     {
         return $this->belongsTo(Page::class);
-    }
-
-    public function creator(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'created_by');
     }
 }

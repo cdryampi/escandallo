@@ -8,8 +8,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class PageResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
-     *
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
@@ -23,6 +21,9 @@ class PageResource extends JsonResource
             'meta_title' => $this->meta_title,
             'meta_description' => $this->meta_description,
             'meta_image_url' => $this->meta_image_url,
+            'blocks' => $this->draftVersion?->blocks
+                ?? $this->publishedVersion?->blocks
+                ?? [],
             'published_version' => new PageVersionResource($this->whenLoaded('publishedVersion')),
             'draft_version' => new PageVersionResource($this->whenLoaded('draftVersion')),
             'versions' => PageVersionResource::collection($this->whenLoaded('versions')),

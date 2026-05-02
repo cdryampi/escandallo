@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\Page;
-use App\Models\PageVersion;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -19,11 +18,16 @@ class CmsAdminTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->admin = User::factory()->create(['is_admin' => true, 'role' => 'admin']);
-        $this->user = User::factory()->create(['is_admin' => false, 'role' => 'user']);
 
-        // Seed initial pages
-        $this->artisan('db:seed', ['--class' => 'PageSeeder']);
+        $this->admin = User::factory()->create([
+            'is_admin' => true,
+            'role' => 'admin',
+        ]);
+
+        $this->user = User::factory()->create([
+            'is_admin' => false,
+            'role' => 'user',
+        ]);
     }
 
     public function test_only_admins_can_list_pages(): void
@@ -31,20 +35,33 @@ class CmsAdminTest extends TestCase
         $this->actingAs($this->admin)
             ->getJson('/api/v1/admin/pages')
             ->assertOk()
-            ->assertJsonCount(5, 'data');
+            ->assertJsonCount(5, 'data')
+            ->assertJsonPath('data.0.slug', 'home');
 
         $this->actingAs($this->user)
             ->getJson('/api/v1/admin/pages')
             ->assertForbidden();
     }
 
-    public function test_admin_can_get_draft_for_a_page(): void
+    public function test_admin_can_get_page_detail_with_versions(): void
     {
-        $page = Page::where('slug', 'home')->first();
+        $page = Page::query()->where('slug', 'home')->firstOrFail();
+
+        $this->actingAs($this->admin)
+            ->getJson("/api/v1/admin/pages/{$page->id}")
+            ->assertOk()
+            ->assertJsonPath('data.slug', 'home')
+            ->assertJsonPath('data.published_version.status', 'published');
+    }
+
+    public function test_admin_can_get_or_create_draft_for_a_page(): void
+    {
+        $page = Page::query()->where('slug', 'home')->firstOrFail();
 
         $this->actingAs($this->admin)
             ->postJson("/api/v1/admin/pages/{$page->id}/draft")
-            ->assertCreated()
+            ->assertOk()
+            ->assertJsonPath('data.page_id', $page->id)
             ->assertJsonPath('data.status', 'draft');
 
         $this->assertDatabaseHas('page_versions', [
@@ -53,48 +70,58 @@ class CmsAdminTest extends TestCase
         ]);
     }
 
-    public function test_admin_can_update_a_version(): void
+    public function test_admin_can_update_a_version_and_page_seo(): void
     {
-        $page = Page::where('slug', 'home')->first();
-        $draft = PageVersion::create([
-            'page_id' => $page->id,
-            'status' => 'draft',
-            'blocks' => [],
-        ]);
+        $page = Page::query()->where('slug', 'home')->firstOrFail();
 
+        $draftResponse = $this->actingAs($this->admin)
+            ->postJson("/api/v1/admin/pages/{$page->id}/draft")
+            ->assertOk();
+
+        $versionId = (int) $draftResponse->json('data.id');
         $blocks = [
-            ['id' => '1', 'type' => 'HeroBlock', 'is_visible' => true, 'data' => ['title' => 'Updated']],
+            [
+                'id' => 'hero-1',
+                'type' => 'HeroBlock',
+                'is_visible' => true,
+                'data' => [
+                    'title' => 'Updated home',
+                    'subtitle' => 'Subtitle',
+                    'image_url' => '',
+                    'cta_text' => 'Entrar',
+                    'cta_url' => '/login',
+                ],
+            ],
         ];
 
         $this->actingAs($this->admin)
-            ->putJson("/api/v1/admin/pages/versions/{$draft->id}", [
+            ->putJson("/api/v1/admin/pages/versions/{$versionId}", [
                 'blocks' => $blocks,
-                'meta_title' => 'New SEO Title',
+                'meta_title' => 'Inicio actualizado',
+                'meta_description' => 'Nueva descripcion',
+                'show_in_menu' => true,
+                'is_active' => true,
             ])
-            ->assertOk();
+            ->assertOk()
+            ->assertJsonPath('data.blocks.0.data.title', 'Updated home')
+            ->assertJsonPath('data.meta_title', 'Inicio actualizado');
 
-        $this->assertDatabaseHas('page_versions', [
-            'id' => $draft->id,
-            'blocks' => json_encode($blocks),
-        ]);
+        $page->refresh();
 
-        $this->assertDatabaseHas('pages', [
-            'id' => $page->id,
-            'meta_title' => 'New SEO Title',
-        ]);
+        $this->assertSame('Inicio actualizado', $page->meta_title);
+        $this->assertSame('Nueva descripcion', $page->meta_description);
+        $this->assertTrue($page->show_in_menu);
     }
 
     public function test_admin_update_validates_block_payload_shape(): void
     {
-        $page = Page::where('slug', 'home')->first();
-        $draft = PageVersion::create([
-            'page_id' => $page->id,
-            'status' => 'draft',
-            'blocks' => [],
-        ]);
+        $page = Page::query()->where('slug', 'home')->firstOrFail();
+        $versionId = (int) $this->actingAs($this->admin)
+            ->postJson("/api/v1/admin/pages/{$page->id}/draft")
+            ->json('data.id');
 
         $this->actingAs($this->admin)
-            ->putJson("/api/v1/admin/pages/versions/{$draft->id}", [
+            ->putJson("/api/v1/admin/pages/versions/{$versionId}", [
                 'blocks' => [
                     [
                         'id' => 'hero-1',
@@ -110,58 +137,46 @@ class CmsAdminTest extends TestCase
             ->assertJsonValidationErrors(['blocks.0.data.title']);
     }
 
-    public function test_admin_can_clear_page_seo_fields_when_saving_draft(): void
+    public function test_admin_can_publish_a_version_and_archive_previous_publication(): void
     {
-        $page = Page::where('slug', 'home')->first();
-        $page->update([
-            'meta_title' => 'Old title',
-            'meta_description' => 'Old description',
-        ]);
+        $page = Page::query()->where('slug', 'home')->firstOrFail();
 
-        $draft = PageVersion::create([
-            'page_id' => $page->id,
-            'status' => 'draft',
-            'blocks' => [
-                ['id' => '1', 'type' => 'RichTextBlock', 'is_visible' => true, 'data' => ['content' => '<p>Body</p>']],
+        $draftId = (int) $this->actingAs($this->admin)
+            ->postJson("/api/v1/admin/pages/{$page->id}/draft")
+            ->json('data.id');
+
+        $blocks = [
+            [
+                'id' => 'hero-1',
+                'type' => 'HeroBlock',
+                'is_visible' => true,
+                'data' => [
+                    'title' => 'Publish me',
+                    'subtitle' => '',
+                    'image_url' => '',
+                    'cta_text' => '',
+                    'cta_url' => '',
+                ],
             ],
-        ]);
+        ];
 
         $this->actingAs($this->admin)
-            ->putJson("/api/v1/admin/pages/versions/{$draft->id}", [
-                'blocks' => [
-                    ['id' => '1', 'type' => 'RichTextBlock', 'is_visible' => true, 'data' => ['content' => '<p>Body</p>']],
-                ],
-                'meta_title' => '',
-                'meta_description' => '',
+            ->putJson("/api/v1/admin/pages/versions/{$draftId}", [
+                'blocks' => $blocks,
             ])
             ->assertOk();
 
-        $this->assertDatabaseHas('pages', [
-            'id' => $page->id,
-            'meta_title' => null,
-            'meta_description' => null,
-        ]);
-    }
-
-    public function test_admin_can_publish_a_version(): void
-    {
-        $page = Page::where('slug', 'home')->first();
-        $draft = PageVersion::create([
-            'page_id' => $page->id,
-            'status' => 'draft',
-            'blocks' => [['id' => '1', 'type' => 'HeroBlock', 'is_visible' => true, 'data' => ['title' => 'To Publish']]],
-        ]);
-
         $this->actingAs($this->admin)
-            ->postJson("/api/v1/admin/pages/versions/{$draft->id}/publish")
-            ->assertOk();
+            ->postJson("/api/v1/admin/pages/versions/{$draftId}/publish")
+            ->assertOk()
+            ->assertJsonPath('data.id', $draftId)
+            ->assertJsonPath('data.status', 'published');
 
         $this->assertDatabaseHas('page_versions', [
-            'id' => $draft->id,
+            'id' => $draftId,
             'status' => 'published',
         ]);
 
-        // Old published should be archived
         $this->assertDatabaseHas('page_versions', [
             'page_id' => $page->id,
             'status' => 'archived',

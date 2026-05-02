@@ -12,6 +12,7 @@ import type {
   FeatureListBlockData,
   ContactFormBlockData,
   MenuHighlightsBlockData,
+  PublicContactSubmissionValues,
 } from '@/features/cms/schemas/cms.schema'
 
 export type {
@@ -20,6 +21,7 @@ export type {
   FeatureListBlockData,
   ContactFormBlockData,
   MenuHighlightsBlockData,
+  PublicContactSubmissionValues,
 }
 
 export const CMS_BLOCK_TYPES = [
@@ -36,6 +38,41 @@ export type Block = CmsBlockValues
 export type PageVersion = PageVersionValues
 export type CmsPage = CmsPageValues
 export type PageSummary = CmsPage
+export type ContactSubmissionStatus = 'new' | 'read' | 'resolved'
+
+export interface ContactSubmissionPageRef {
+  id: number
+  slug: string
+  name: string
+}
+
+export interface ContactSubmission {
+  id: number
+  page_id: number
+  page: ContactSubmissionPageRef | null
+  name: string
+  email: string
+  subject: string
+  message: string
+  status: ContactSubmissionStatus
+  read_at: string | null
+  resolved_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface ContactSubmissionCounts {
+  new: number
+  read: number
+  resolved: number
+}
+
+export interface ContactSubmissionListResponse {
+  data: ContactSubmission[]
+  meta: {
+    counts: ContactSubmissionCounts
+  }
+}
 
 type MaybeWrapped<T> = { data: T } | T
 

@@ -1,27 +1,26 @@
-import { Outlet, Link, useParams } from '@tanstack/react-router'
+import { Link, Outlet, useParams } from '@tanstack/react-router'
+import {
+  ArrowLeft,
+  ExternalLink,
+  Layout,
+  Monitor,
+  Send,
+  Smartphone,
+  Tablet as TabletIcon,
+  X,
+} from 'lucide-react'
+import { toast } from 'sonner'
 import {
   useAdminPage,
   useAdminPageDraft,
   usePublishPageVersion,
 } from '@/api/cms'
-import { LoadingState } from '@/components/feedback/loading-state'
 import { ErrorState } from '@/components/feedback/error-state'
+import { LoadingState } from '@/components/feedback/loading-state'
 import { Button } from '@/components/ui/button'
-import {
-  Send,
-  ArrowLeft,
-  Smartphone,
-  Tablet as TabletIcon,
-  Monitor,
-  Layout,
-  X,
-  ExternalLink,
-} from 'lucide-react'
-import { toast } from 'sonner'
+import { BlockFormSwitcher } from '../components/BlockFormSwitcher'
 import { CmsEditorSidebar } from '../components/CmsEditorSidebar'
 import { useCmsEditorStore } from '../stores/cms-editor-store'
-import { ResizablePanel, ResizablePanelGroup, ResizableHandle } from '@/components/ui/resizable'
-import { BlockFormSwitcher } from '../components/BlockFormSwitcher'
 
 export const CmsEditorLayout = () => {
   const { pageId } = useParams({ from: '/backoffice/cms/pages/$pageId' })
@@ -33,7 +32,7 @@ export const CmsEditorLayout = () => {
     error: pageError,
     refetch: refetchPage,
   } = useAdminPage(parsedPageId)
-  
+
   const {
     data: draft,
     isLoading: isDraftLoading,
@@ -41,9 +40,9 @@ export const CmsEditorLayout = () => {
     refetch: refetchDraft,
   } = useAdminPageDraft(parsedPageId)
 
-  const { 
-    selectedBlockId, 
-    setSelectedBlockId, 
+  const {
+    selectedBlockId,
+    setSelectedBlockId,
     workingBlocks,
     updateWorkingBlock,
     deviceMode,
@@ -56,7 +55,7 @@ export const CmsEditorLayout = () => {
     return (
       <LoadingState
         title="Cargando editor CMS"
-        description="Preparando bloques, SEO y estado de publicación..."
+        description="Preparando bloques, SEO y estado de publicacion..."
       />
     )
   }
@@ -65,7 +64,7 @@ export const CmsEditorLayout = () => {
     return (
       <ErrorState
         title="Error al cargar el editor"
-        description="No se pudo recuperar la información de la página."
+        description="No se pudo recuperar la informacion de la pagina."
         onRetry={() => {
           void refetchPage()
           void refetchDraft()
@@ -75,58 +74,59 @@ export const CmsEditorLayout = () => {
   }
 
   const handleExternalPreview = () => {
-    const url = `/${page.slug}?preview=true`
+    const url = page.slug === 'home' ? '/?preview=true' : `/${page.slug}?preview=true`
     window.open(url, '_blank')
   }
 
   const handlePublish = () => {
-    if (!window.confirm('¿Publicar esta versión?')) return
+    if (!window.confirm('Publicar esta version?')) return
+
     publishVersion.mutate(draft.id, {
-      onSuccess: () => toast.success('Página publicada con éxito.'),
+      onSuccess: () => toast.success('Pagina publicada con exito.'),
       onError: () => toast.error('Error al publicar.'),
     })
   }
 
-  const selectedBlock = workingBlocks.find((b) => b.id === selectedBlockId)
+  const selectedBlock = workingBlocks.find((block) => block.id === selectedBlockId)
 
   return (
-    <div className="flex flex-col h-[calc(100vh-theme(spacing.16))] -m-6 overflow-hidden bg-surface-container-lowest">
-      {/* Barra de Herramientas Superior */}
-      <header className="flex h-14 items-center justify-between border-b border-border bg-white px-6 shadow-sm shrink-0 z-30">
-        <div className="flex items-center gap-4">
+    <div className="flex h-[calc(100vh-theme(spacing.16))] flex-col overflow-hidden bg-surface-container-lowest">
+      <header className="z-30 flex h-14 shrink-0 items-center justify-between border-b border-border bg-white px-4 shadow-sm md:px-6">
+        <div className="flex min-w-0 items-center gap-4">
           <Link
             to="/backoffice/cms/pages"
             className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-white text-muted-foreground transition-colors hover:bg-surface-container-low hover:text-foreground"
           >
             <ArrowLeft className="size-4" />
           </Link>
-          <div className="flex flex-col">
-            <h1 className="text-sm font-bold truncate max-w-[200px]">{page.name}</h1>
-            <span className="text-[10px] text-muted-foreground">/{page.slug}</span>
+          <div className="flex min-w-0 flex-col">
+            <h1 className="max-w-[220px] truncate text-sm font-bold">{page.name}</h1>
+            <span className="text-[10px] text-muted-foreground">
+              {page.slug === 'home' ? '/' : `/${page.slug}`}
+            </span>
           </div>
         </div>
 
-        {/* Device Toggles */}
-        <div className="hidden md:flex items-center gap-1 rounded-lg bg-surface-container-low p-1 border border-border/50">
-          <Button 
-            variant={deviceMode === 'mobile' ? 'secondary' : 'ghost'} 
-            size="icon" 
+        <div className="hidden items-center gap-1 rounded-lg border border-border/50 bg-surface-container-low p-1 md:flex">
+          <Button
+            variant={deviceMode === 'mobile' ? 'secondary' : 'ghost'}
+            size="icon"
             className="h-8 w-8"
             onClick={() => setDeviceMode('mobile')}
           >
             <Smartphone className="size-4" />
           </Button>
-          <Button 
-            variant={deviceMode === 'tablet' ? 'secondary' : 'ghost'} 
-            size="icon" 
+          <Button
+            variant={deviceMode === 'tablet' ? 'secondary' : 'ghost'}
+            size="icon"
             className="h-8 w-8"
             onClick={() => setDeviceMode('tablet')}
           >
             <TabletIcon className="size-4" />
           </Button>
-          <Button 
-            variant={deviceMode === 'desktop' ? 'secondary' : 'ghost'} 
-            size="icon" 
+          <Button
+            variant={deviceMode === 'desktop' ? 'secondary' : 'ghost'}
+            size="icon"
             className="h-8 w-8"
             onClick={() => setDeviceMode('desktop')}
           >
@@ -134,17 +134,22 @@ export const CmsEditorLayout = () => {
           </Button>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm" onClick={handleExternalPreview} className="gap-2 h-9 border-dashed">
+        <div className="flex items-center gap-2 md:gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExternalPreview}
+            className="h-9 gap-2 border-dashed"
+          >
             <ExternalLink className="size-4" />
-            <span className="hidden sm:inline">Ver Sitio</span>
+            <span className="hidden sm:inline">Ver sitio</span>
           </Button>
-          <div className="h-6 w-px bg-border" />
+          <div className="hidden h-6 w-px bg-border sm:block" />
           <Button
             size="sm"
             onClick={handlePublish}
             disabled={publishVersion.isPending}
-            className="gap-2 h-9 px-4 shadow-sm"
+            className="h-9 gap-2 px-4 shadow-sm"
           >
             <Send className="size-4" />
             {publishVersion.isPending ? 'Publicando...' : 'Publicar'}
@@ -152,71 +157,71 @@ export const CmsEditorLayout = () => {
         </div>
       </header>
 
-      {/* Área Principal con Paneles Resizables */}
       <div className="flex-1 overflow-hidden">
-        <ResizablePanelGroup orientation="horizontal">
-          {/* Columna 1: Navegación y Árbol */}
-          <ResizablePanel defaultSize={20} minSize={15} maxSize={25} className="bg-white border-r border-border p-4">
+        <div className="grid h-full grid-cols-1 overflow-hidden xl:grid-cols-[280px_minmax(0,1fr)_360px]">
+          <aside className="hidden min-h-0 border-r border-border bg-white p-4 xl:block">
             <CmsEditorSidebar />
-          </ResizablePanel>
+          </aside>
 
-          <ResizableHandle className="w-1 bg-transparent hover:bg-primary/10 transition-colors" />
+          <main className="min-h-0 overflow-y-auto bg-surface-container-low custom-scrollbar">
+            <div className="mx-auto h-full p-4 md:p-6 xl:p-8">
+              <Outlet />
+            </div>
+          </main>
 
-          {/* Columna 2: Canvas / Área de Trabajo */}
-          <ResizablePanel defaultSize={50} minSize={30} className="bg-surface-container-low overflow-y-auto relative custom-scrollbar">
-             <div className="p-8 mx-auto h-full">
-                <Outlet />
-             </div>
-          </ResizablePanel>
-
-          <ResizableHandle className="w-1 bg-transparent hover:bg-primary/10 transition-colors" />
-
-          {/* Columna 3: Propiedades / Inspector */}
-          <ResizablePanel defaultSize={30} minSize={20} maxSize={40} className="bg-white border-l border-border flex flex-col overflow-hidden shadow-2xl">
+          <aside className="hidden min-h-0 border-l border-border bg-white xl:flex xl:flex-col xl:overflow-hidden">
             {selectedBlock ? (
-              <div className="flex flex-col h-full animate-in slide-in-from-right duration-200">
-                <div className="p-4 border-b border-border bg-surface-container-lowest flex items-center justify-between">
+              <div className="flex h-full flex-col animate-in slide-in-from-right duration-200">
+                <div className="flex items-center justify-between border-b border-border bg-surface-container-lowest p-4">
                   <div>
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">Inspector de Bloque</h3>
+                    <h3 className="mb-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                      Inspector de bloque
+                    </h3>
                     <div className="flex items-center gap-2">
-                       <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[9px] font-bold uppercase text-primary border border-primary/20">
-                          {selectedBlock.type}
-                       </span>
+                      <span className="rounded border border-primary/20 bg-primary/10 px-1.5 py-0.5 text-[9px] font-bold uppercase text-primary">
+                        {selectedBlock.type}
+                      </span>
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => setSelectedBlockId(null)}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-full"
+                    onClick={() => setSelectedBlockId(null)}
+                  >
                     <X className="size-4" />
                   </Button>
                 </div>
-                <div className="flex-1 overflow-y-auto p-10 custom-scrollbar pb-40">
+
+                <div className="custom-scrollbar flex-1 overflow-y-auto p-6 pb-24">
                   <BlockFormSwitcher
                     block={selectedBlock}
                     onSubmit={(data) => {
-                       updateWorkingBlock(selectedBlock.id, data)
-                       toast.success('Cambios aplicados a la preview.', {
-                         description: 'Recuerda guardar la página para persistir los cambios.',
-                         duration: 2000
-                       })
+                      updateWorkingBlock(selectedBlock.id, data)
+                      toast.success('Cambios aplicados a la preview.', {
+                        description: 'Recuerda guardar la pagina para persistir los cambios.',
+                        duration: 2000,
+                      })
                     }}
                     onCancel={() => setSelectedBlockId(null)}
                   />
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center h-full p-8 text-center space-y-4 bg-surface-container-lowest/30">
-                <div className="rounded-full bg-surface-container p-6 border border-border/50">
+              <div className="flex h-full flex-col items-center justify-center space-y-4 bg-surface-container-lowest/30 p-8 text-center">
+                <div className="rounded-full border border-border/50 bg-surface-container p-6">
                   <Layout className="size-8 text-muted-foreground/30" />
                 </div>
-                <div className="max-w-[200px]">
-                  <h4 className="text-sm font-bold text-on-surface">Panel de Propiedades</h4>
-                  <p className="text-[11px] text-muted-foreground mt-2 leading-relaxed">
-                    Selecciona un bloque del árbol de la izquierda o de la estructura central para editar su contenido y configuración.
+                <div className="max-w-[220px]">
+                  <h4 className="text-sm font-bold text-on-surface">Panel de propiedades</h4>
+                  <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+                    Selecciona un bloque del arbol o de la estructura central para editar su contenido.
                   </p>
                 </div>
               </div>
             )}
-          </ResizablePanel>
-        </ResizablePanelGroup>
+          </aside>
+        </div>
       </div>
     </div>
   )

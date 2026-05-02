@@ -38,6 +38,7 @@ No usar Gemini CLI para:
 
 - Tratar `AGENTS.md` como fuente principal de reglas.
 - Basar recomendaciones en stack real del repo, no en docs antiguas.
+- **Laravel Boost:** Se ha instalado `laravel/boost`. Utilizar las guidelines en `backend/CLAUDE.md` y activar el skill `laravel-best-practices` para tareas de backend.
 - Si detectas contradicciones entre documentos, destacar primero la diferencia y luego proponer alineacion con `AGENTS.md`.
 - En cambios pequenos, delegar a Codex en lugar de abrir analisis grande.
 - En UX/UI, permitir que Antigravity revise experiencia y consistencia visual mientras Codex mantiene integracion tecnica.

@@ -7,9 +7,10 @@ import { RichTextBlock } from './blocks/rich-text-block'
 
 interface Props {
   blocks: Block[]
+  pageId?: number
 }
 
-export const CmsRenderer = ({ blocks }: Props) => {
+export const CmsRenderer = ({ blocks, pageId }: Props) => {
   const visibleBlocks = blocks.filter((block) => block.is_visible)
 
   if (visibleBlocks.length === 0) {
@@ -31,7 +32,7 @@ export const CmsRenderer = ({ blocks }: Props) => {
           case 'FeatureListBlock':
             return <FeatureListBlock key={block.id} data={block.data} />
           case 'ContactFormBlock':
-            return <ContactFormBlock key={block.id} data={block.data} />
+            return <ContactFormBlock key={block.id} data={block.data} pageId={pageId} />
           case 'MenuHighlightsBlock':
             return <MenuHighlightsBlock key={block.id} data={block.data} />
         }

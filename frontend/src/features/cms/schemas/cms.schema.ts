@@ -68,6 +68,13 @@ export const MenuHighlightsBlockSchema = z.object({
   recipe_ids: z.array(z.number()).min(1, 'Selecciona al menos una receta'),
 })
 
+export const PublicContactSubmissionSchema = z.object({
+  name: z.string().trim().min(1, 'El nombre es obligatorio').max(120, 'Maximo 120 caracteres'),
+  email: z.string().trim().email('Email invalido').max(255, 'Maximo 255 caracteres'),
+  subject: z.string().trim().min(1, 'El asunto es obligatorio').max(160, 'Maximo 160 caracteres'),
+  message: z.string().trim().min(1, 'El mensaje es obligatorio').max(5000, 'Maximo 5000 caracteres'),
+})
+
 /**
  * Coerces mixed recipe_id arrays from API payloads (strings, nulls, negatives)
  * into clean positive integers. Used only by the CMS normalizer, not by forms.
@@ -156,3 +163,4 @@ export type SeoSettingsValues = z.infer<typeof SeoSettingsSchema>
 export type CmsBlockValues = z.infer<typeof CmsBlockSchema>
 export type PageVersionValues = z.infer<typeof PageVersionSchema>
 export type CmsPageValues = z.infer<typeof CmsPageSchema>
+export type PublicContactSubmissionValues = z.infer<typeof PublicContactSubmissionSchema>

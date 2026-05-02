@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Page extends Model
 {
@@ -16,32 +18,33 @@ class Page extends Model
         'meta_image_url',
     ];
 
-    protected $casts = [
-        'is_active' => 'boolean',
-        'show_in_menu' => 'boolean',
-    ];
-
     /**
-     * Get all versions of the page.
+     * @return array<string, string>
      */
-    public function versions()
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+            'show_in_menu' => 'boolean',
+        ];
+    }
+
+    public function versions(): HasMany
     {
         return $this->hasMany(PageVersion::class);
     }
 
-    /**
-     * Get the currently published version.
-     */
-    public function publishedVersion()
+    public function publishedVersion(): HasOne
     {
-        return $this->hasOne(PageVersion::class)->where('status', 'published')->latestOfMany('published_at');
+        return $this->hasOne(PageVersion::class)
+            ->where('status', 'published')
+            ->latestOfMany('published_at');
     }
 
-    /**
-     * Get the current draft version.
-     */
-    public function draftVersion()
+    public function draftVersion(): HasOne
     {
-        return $this->hasOne(PageVersion::class)->where('status', 'draft')->latestOfMany();
+        return $this->hasOne(PageVersion::class)
+            ->where('status', 'draft')
+            ->latestOfMany();
     }
 }

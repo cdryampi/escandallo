@@ -3,8 +3,9 @@ import { EmptyState } from '@/components/feedback/empty-state'
 import { ErrorState } from '@/components/feedback/error-state'
 import { LoadingState } from '@/components/feedback/loading-state'
 import { BackofficePageHeader } from '@/components/layout/backoffice-page-header'
+import { Button } from '@/components/ui/button'
 import { Link } from '@tanstack/react-router'
-import { Edit2, Globe } from 'lucide-react'
+import { Edit2, Globe, Inbox } from 'lucide-react'
 
 export const CmsPagesPage = () => {
   const { data: pages = [], isLoading, error, refetch } = useAdminPages()
@@ -15,6 +16,15 @@ export const CmsPagesPage = () => {
         title="Gestion de Contenido (CMS)"
         description="Administra paginas publicas y secciones editoriales del sitio."
       />
+
+      <div className="flex justify-end">
+        <Button asChild variant="outline" size="sm">
+          <Link to="/backoffice/cms/inbox">
+            <Inbox className="size-4" />
+            Abrir buzon
+          </Link>
+        </Button>
+      </div>
 
       {isLoading ? (
         <LoadingState
@@ -43,7 +53,7 @@ export const CmsPagesPage = () => {
               <div className="mb-4 flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <h3 className="type-headline-sm truncate font-bold text-foreground">{page.name}</h3>
-                  <p className="type-body-sm text-muted-foreground">/{page.slug}</p>
+                  <p className="type-body-sm text-muted-foreground">{page.slug === 'home' ? '/' : `/${page.slug}`}</p>
                 </div>
                 <span
                   className={
@@ -64,6 +74,7 @@ export const CmsPagesPage = () => {
                   Publicada:{' '}
                   {page.published_version ? `v${page.published_version.version_number}` : 'sin version publicada'}
                 </p>
+                <p>Menu principal: {page.show_in_menu ? 'visible' : 'oculta'}</p>
               </div>
 
               <div className="mt-auto flex items-center gap-3 border-t border-border pt-4">
@@ -76,7 +87,7 @@ export const CmsPagesPage = () => {
                   Editar
                 </Link>
                 <a
-                  href={`/${page.slug}`}
+                  href={page.slug === 'home' ? '/' : `/${page.slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded bg-surface-container px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-surface-container-high"

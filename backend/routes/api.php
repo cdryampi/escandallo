@@ -1,11 +1,14 @@
 <?php
 
 use App\Http\Controllers\Admin\MediaController;
+use App\Http\Controllers\Admin\ContactSubmissionController as AdminContactSubmissionController;
+use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Api\V1\DashboardController;
+use App\Http\Controllers\Api\V1\PublicContactSubmissionController;
 use App\Http\Controllers\Api\V1\IngredientController;
 use App\Http\Controllers\Api\V1\PublicRecipeController;
 use App\Http\Controllers\Api\V1\RecipeController;
-use App\Http\Controllers\PageController;
+use App\Http\Controllers\PageController as PublicPageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -37,17 +40,23 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // Admin CMS
     Route::prefix('admin')->group(function () {
-        Route::get('pages', [App\Http\Controllers\Admin\PageController::class, 'index']);
-        Route::get('pages/{page}', [App\Http\Controllers\Admin\PageController::class, 'show']);
-        Route::post('pages/{page}/draft', [App\Http\Controllers\Admin\PageController::class, 'getDraft']);
-        Route::put('pages/versions/{version}', [App\Http\Controllers\Admin\PageController::class, 'updateVersion']);
-        Route::post('pages/versions/{version}/publish', [App\Http\Controllers\Admin\PageController::class, 'publish']);
+        Route::get('pages', [AdminPageController::class, 'index']);
+        Route::get('pages/{page}', [AdminPageController::class, 'show']);
+        Route::post('pages/{page}/draft', [AdminPageController::class, 'getDraft']);
+        Route::put('pages/versions/{version}', [AdminPageController::class, 'updateVersion']);
+        Route::post('pages/versions/{version}/publish', [AdminPageController::class, 'publish']);
+        Route::get('contact-submissions', [AdminContactSubmissionController::class, 'index']);
+        Route::get('contact-submissions/{contactSubmission}', [AdminContactSubmissionController::class, 'show']);
+        Route::patch('contact-submissions/{contactSubmission}', [AdminContactSubmissionController::class, 'update']);
+        Route::patch('landing/{module}', [App\Http\Controllers\Api\V1\LandingController::class, 'update']);
         Route::get('media', [MediaController::class, 'index']);
         Route::post('media/upload', [MediaController::class, 'upload']);
     });
 });
 
 // Public CMS
-Route::get('cms/menu', [PageController::class, 'menu']);
-Route::get('pages/{slug}', [PageController::class, 'show']);
+Route::get('landing', [App\Http\Controllers\Api\V1\LandingController::class, 'show']);
+Route::get('pages/{slug}', [PublicPageController::class, 'show']);
+Route::get('cms/menu', [PublicPageController::class, 'menu']);
 Route::get('public/recipes', [PublicRecipeController::class, 'index']);
+Route::post('contact-submissions', [PublicContactSubmissionController::class, 'store'])->middleware('throttle:5,1');

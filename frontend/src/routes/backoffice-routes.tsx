@@ -1,4 +1,4 @@
-import { createRoute } from '@tanstack/react-router'
+import { createRoute, Outlet } from '@tanstack/react-router'
 import type { AnyRoute } from '@tanstack/react-router'
 import { ingredientFiltersSchema } from '@/features/ingredients/schemas/ingredient.schema'
 import type { IngredientFiltersValues } from '@/features/ingredients/schemas/ingredient.schema'
@@ -41,6 +41,24 @@ const CmsPagesPage = lazyNamedRouteComponent(
   {
     title: 'Cargando páginas CMS',
     description: 'Preparando gestión de contenido editable.',
+  },
+)
+
+const CmsInboxPage = lazyNamedRouteComponent(
+  () => import('@/features/cms/pages/cms-inbox-page'),
+  'CmsInboxPage',
+  {
+    title: 'Cargando buzÃ³n CMS',
+    description: 'Preparando consultas, filtros y detalle del buzÃ³n web.',
+  },
+)
+
+const CmsIndexPage = lazyNamedRouteComponent(
+  () => import('@/features/cms/pages/cms-index-page'),
+  'CmsIndexPage',
+  {
+    title: 'Cargando ayuda CMS',
+    description: 'Preparando guía del editor de plantillas.',
   },
 )
 
@@ -234,21 +252,39 @@ export const buildBackofficeRoutes = (rootRoute: AnyRoute) => {
     component: SettingsPage,
   })
 
-  const cmsPagesRoute = createRoute({
+  const cmsLayoutRoute = createRoute({
     getParentRoute: () => backofficeRoute,
-    path: 'cms/pages',
+    path: 'cms',
+    component: () => <Outlet />,
+  })
+
+  const cmsIndexRoute = createRoute({
+    getParentRoute: () => cmsLayoutRoute,
+    path: '/',
+    component: CmsIndexPage,
+  })
+
+  const cmsPagesRoute = createRoute({
+    getParentRoute: () => cmsLayoutRoute,
+    path: 'pages',
     component: CmsPagesPage,
   })
 
+  const cmsInboxRoute = createRoute({
+    getParentRoute: () => cmsLayoutRoute,
+    path: 'inbox',
+    component: CmsInboxPage,
+  })
+
   const cmsCreateRoute = createRoute({
-    getParentRoute: () => backofficeRoute,
-    path: 'cms/pages/create',
+    getParentRoute: () => cmsLayoutRoute,
+    path: 'pages/create',
     component: CmsPagesPage,
   })
 
   const cmsEditorLayoutRoute = createRoute({
-    getParentRoute: () => backofficeRoute,
-    path: 'cms/pages/$pageId',
+    getParentRoute: () => cmsLayoutRoute,
+    path: 'pages/$pageId',
     component: CmsEditorLayout,
   })
 
@@ -445,14 +481,18 @@ export const buildBackofficeRoutes = (rootRoute: AnyRoute) => {
   return backofficeRoute.addChildren([
     backofficeIndexRoute,
     settingsRoute,
-    cmsPagesRoute,
-    cmsCreateRoute,
-    cmsEditorLayoutRoute.addChildren([
-      cmsEditorIndexRoute,
-      cmsEditorContentRoute,
-      cmsEditorSeoRoute,
-      cmsEditorHistoryRoute,
-      cmsEditorSettingsRoute,
+    cmsLayoutRoute.addChildren([
+      cmsIndexRoute,
+      cmsPagesRoute,
+      cmsInboxRoute,
+      cmsCreateRoute,
+      cmsEditorLayoutRoute.addChildren([
+        cmsEditorIndexRoute,
+        cmsEditorContentRoute,
+        cmsEditorSeoRoute,
+        cmsEditorHistoryRoute,
+        cmsEditorSettingsRoute,
+      ]),
     ]),
     usersRoute,
     ingredientsRoute,

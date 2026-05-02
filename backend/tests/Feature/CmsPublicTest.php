@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Page;
+use App\Models\PageVersion;
 use App\Models\Recipe;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -11,21 +12,18 @@ class CmsPublicTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected function setUp(): void
+    public function test_guest_can_view_seeded_published_pages(): void
     {
-        parent::setUp();
-        $this->artisan('db:seed', ['--class' => 'PageSeeder']);
-    }
-
-    public function test_guest_can_view_published_page(): void
-    {
-        $this->getJson('/api/v1/pages/home')
-            ->assertOk()
-            ->assertJsonStructure([
-                'data' => [
-                    'id', 'slug', 'name', 'meta_title', 'meta_description', 'meta_image_url', 'blocks', 'published_at',
-                ],
-            ]);
+        foreach (['home', 'carta', 'contacto', 'legal', 'privacidad'] as $slug) {
+            $this->getJson("/api/v1/pages/{$slug}")
+                ->assertOk()
+                ->assertJsonPath('data.slug', $slug)
+                ->assertJsonStructure([
+                    'data' => [
+                        'id', 'slug', 'name', 'meta_title', 'meta_description', 'meta_image_url', 'blocks',
+                    ],
+                ]);
+        }
     }
 
     public function test_guest_gets_404_if_page_does_not_exist(): void
@@ -36,19 +34,40 @@ class CmsPublicTest extends TestCase
 
     public function test_guest_gets_404_if_page_is_inactive(): void
     {
-        $page = Page::where('slug', 'home')->first();
+        $page = Page::query()->where('slug', 'legal')->firstOrFail();
         $page->update(['is_active' => false]);
 
-        $this->getJson('/api/v1/pages/home')
+        $this->getJson('/api/v1/pages/legal')
             ->assertNotFound();
     }
 
     public function test_guest_gets_404_if_no_published_version(): void
     {
-        $page = Page::create(['slug' => 'no-version', 'name' => 'No Version']);
+        $page = Page::query()->create([
+            'slug' => 'draft-only',
+            'name' => 'Draft only',
+            'is_active' => true,
+            'show_in_menu' => false,
+        ]);
 
-        $this->getJson('/api/v1/pages/no-version')
+        PageVersion::query()->create([
+            'page_id' => $page->id,
+            'status' => 'draft',
+            'version_number' => 1,
+            'blocks' => [],
+        ]);
+
+        $this->getJson('/api/v1/pages/draft-only')
             ->assertNotFound();
+    }
+
+    public function test_guest_can_fetch_public_menu_from_active_pages(): void
+    {
+        $this->getJson('/api/v1/cms/menu')
+            ->assertOk()
+            ->assertJsonPath('data.0.slug', '/')
+            ->assertJsonPath('data.1.slug', '/carta')
+            ->assertJsonPath('data.2.slug', '/contacto');
     }
 
     public function test_guest_can_fetch_public_recipe_summaries_for_highlight_blocks(): void

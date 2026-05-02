@@ -11,50 +11,44 @@ use Illuminate\Validation\Rule;
 
 class UpdatePageVersionRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return $this->user()?->is_admin === true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'blocks' => ['required', 'array'],
-            'blocks.*.id' => ['required', 'string', 'distinct'],
-            'blocks.*.type' => ['required', 'string', Rule::in([
+            'blocks' => ['sometimes', 'required', 'array'],
+            'blocks.*.id' => ['required_with:blocks', 'string', 'distinct'],
+            'blocks.*.type' => ['required_with:blocks', 'string', Rule::in([
                 'HeroBlock',
                 'RichTextBlock',
                 'FeatureListBlock',
                 'ContactFormBlock',
                 'MenuHighlightsBlock',
             ])],
-            'blocks.*.is_visible' => ['required', 'boolean'],
-            'blocks.*.data' => ['required', 'array'],
+            'blocks.*.is_visible' => ['required_with:blocks', 'boolean'],
+            'blocks.*.data' => ['required_with:blocks', 'array'],
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:160'],
             'meta_image_url' => ['nullable', 'string', 'max:2048', $this->mediaReferenceRule()],
             'show_in_menu' => ['nullable', 'boolean'],
+            'is_active' => ['nullable', 'boolean'],
         ];
     }
 
     /**
-     * Configure validator after hooks.
-     *
      * @return array<int, callable(Validator): void>
      */
     public function after(): array
     {
         return [
             function (Validator $validator): void {
-                $blocks = $this->input('blocks', []);
+                $blocks = $this->input('blocks');
 
                 if (! is_array($blocks)) {
                     return;
@@ -87,8 +81,6 @@ class UpdatePageVersionRequest extends FormRequest
     }
 
     /**
-     * Get nested data rules for each block type.
-     *
      * @return array<string, mixed>
      */
     protected function rulesForBlockType(string $type): array
@@ -127,9 +119,6 @@ class UpdatePageVersionRequest extends FormRequest
         };
     }
 
-    /**
-     * Validate media reference as absolute URL or local storage path.
-     */
     protected function mediaReferenceRule(): Closure
     {
         return function (string $attribute, mixed $value, Closure $fail): void {
@@ -145,9 +134,6 @@ class UpdatePageVersionRequest extends FormRequest
         };
     }
 
-    /**
-     * Validate CTA links as absolute URL, local path, mailto, or tel.
-     */
     protected function linkReferenceRule(): Closure
     {
         return function (string $attribute, mixed $value, Closure $fail): void {
@@ -168,9 +154,6 @@ class UpdatePageVersionRequest extends FormRequest
         };
     }
 
-    /**
-     * Determine if given value is valid HTTP or HTTPS URL.
-     */
     protected function isAbsoluteUrl(string $value): bool
     {
         $validated = filter_var($value, FILTER_VALIDATE_URL);

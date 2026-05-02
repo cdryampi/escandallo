@@ -96,6 +96,8 @@ Workflow multiagente detallado: `docs/AGENT_WORKFLOW.md`.
 
 - Flujo local oficial corre por Docker Desktop + WSL2. No asumir PHP, MySQL o Nginx instalados en Windows.
 - Ejecutar stack desde WSL o wrappers oficiales de `scripts/windows/`.
+- Si un cambio toca contenedores, networking, caches de runtime o el entorno queda en estado dudoso, reiniciar Docker o los servicios necesarios antes de diagnosticar mas.
+- Tras cambios de backend con nuevas migraciones o cambios de esquema, ejecutar `php artisan migrate` dentro del contenedor `backend` antes de validar el flujo.
 - No correr migraciones, Composer o npm contra runtimes host si version puede divergir del contenedor.
 - Respetar volumenes `backend_vendor` y `frontend_node_modules`; no mover dependencias al bind mount sin razon fuerte.
 - Usar contenedor `backend` para Artisan, Composer y pruebas PHP.
@@ -109,6 +111,8 @@ Workflow multiagente detallado: `docs/AGENT_WORKFLOW.md`.
 ## Reglas de Tests
 
 - Todo cambio funcional debe venir con cobertura de regresion proporcionada al riesgo.
+- Antes de concluir que algo "no funciona", ejecutar los comandos de verificacion aplicables y revisar su salida real; no bloquear trabajo con impresiones sin evidencia de comandos.
+- Cuando el usuario colabora en debugging local, pedir o compartir salida concreta de comandos relevantes para acelerar diagnostico y evitar iteraciones ciegas.
 - Backend:
   - usar `php artisan test`
   - priorizar tests Feature para contratos API

@@ -8,8 +8,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class PagePublicResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
-     *
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
@@ -23,7 +21,7 @@ class PagePublicResource extends JsonResource
             'meta_title' => $this->meta_title,
             'meta_description' => $this->meta_description,
             'meta_image_url' => $this->meta_image_url,
-            'blocks' => $publishedVersion ? $publishedVersion->blocks : [],
+            'blocks' => $publishedVersion?->blocks ?? [],
             'published_at' => $publishedVersion?->published_at?->toIso8601String(),
         ];
     }

@@ -5,18 +5,11 @@ import { useState } from 'react'
 import { motion } from 'motion/react'
 import { useCmsMenu } from '@/api/cms'
 
-const staticLinks = [
-  { to: '/', label: 'Inicio' },
-]
-
 export const PublicHeader = () => {
   const [isOpen, setIsOpen] = useState(false)
   const { data: cmsMenu } = useCmsMenu()
 
-  const links = [
-    ...staticLinks,
-    ...(cmsMenu?.map(item => ({ to: item.slug, label: item.label })) ?? [])
-  ]
+  const links = cmsMenu?.map(item => ({ to: item.slug, label: item.label })) ?? []
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">

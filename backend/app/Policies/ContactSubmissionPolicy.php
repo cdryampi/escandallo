@@ -2,27 +2,22 @@
 
 namespace App\Policies;
 
-use App\Models\Page;
+use App\Models\ContactSubmission;
 use App\Models\User;
 
-class PagePolicy
+class ContactSubmissionPolicy
 {
     public function viewAny(User $user): bool
     {
         return $user->is_admin === true;
     }
 
-    public function view(User $user, Page $page): bool
+    public function view(User $user, ContactSubmission $contactSubmission): bool
     {
         return $user->is_admin === true;
     }
 
-    public function update(User $user, Page $page): bool
-    {
-        return $user->is_admin === true;
-    }
-
-    public function publish(User $user, Page $page): bool
+    public function update(User $user, ContactSubmission $contactSubmission): bool
     {
         return $user->is_admin === true;
     }
