@@ -1,1 +1,5 @@
-export { CmsPagesPage } from '@/features/cms/pages/cms-pages-page'
+export * from './pages/cms-pages-page'
+export * from './layouts/cms-editor-layout'
+export * from './pages/cms-editor-content-page'
+export * from './pages/cms-editor-seo-page'
+export * from './pages/cms-editor-history-page'

@@ -6,6 +6,7 @@ use App\Models\Ingredient;
 use App\Models\Recipe;
 use App\Models\Unit;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class RecipeSeeder extends Seeder
 {
@@ -30,7 +31,7 @@ class RecipeSeeder extends Seeder
                     ['name' => 'Aceite de Oliva Virgen Extra', 'qty' => 100, 'unit' => $ml],
                     ['name' => 'Ajo Seco Morado', 'qty' => 20, 'unit' => $g],
                     ['name' => 'Sal Fina', 'qty' => 20, 'unit' => $g],
-                ]
+                ],
             ],
             [
                 'name' => 'Bechamel Base',
@@ -44,7 +45,7 @@ class RecipeSeeder extends Seeder
                     ['name' => 'Harina Panadera', 'qty' => 100, 'unit' => $g],
                     ['name' => 'Leche Entera', 'qty' => 1000, 'unit' => $ml],
                     ['name' => 'Sal Fina', 'qty' => 5, 'unit' => $g],
-                ]
+                ],
             ],
             [
                 'name' => 'Vinagreta Clásica',
@@ -58,7 +59,7 @@ class RecipeSeeder extends Seeder
                     ['name' => 'Vinagre de Jerez', 'qty' => 100, 'unit' => $ml],
                     ['name' => 'Sal Fina', 'qty' => 10, 'unit' => $g],
                     ['name' => 'Mostaza Dijon', 'qty' => 20, 'unit' => $g],
-                ]
+                ],
             ],
             [
                 'name' => 'Croquetas de Jamón Ibérico',
@@ -73,7 +74,7 @@ class RecipeSeeder extends Seeder
                     ['name' => 'Leche Entera', 'qty' => 1500, 'unit' => $ml],
                     ['name' => 'Jamón Ibérico de Bellota', 'qty' => 300, 'unit' => $g],
                     ['name' => 'Sal Fina', 'qty' => 5, 'unit' => $g],
-                ]
+                ],
             ],
             [
                 'name' => 'Ensaladilla Rusa',
@@ -88,7 +89,7 @@ class RecipeSeeder extends Seeder
                     ['name' => 'Huevo XL', 'qty' => 4, 'unit' => $ud],
                     ['name' => 'Aceitunas Manzanilla', 'qty' => 100, 'unit' => $g],
                     ['name' => 'Sal Fina', 'qty' => 5, 'unit' => $g],
-                ]
+                ],
             ],
             [
                 'name' => 'Lasaña Boloñesa',
@@ -104,7 +105,7 @@ class RecipeSeeder extends Seeder
                     ['name' => 'Zanahoria', 'qty' => 100, 'unit' => $g],
                     ['name' => 'Parchís Reggiano', 'qty' => 150, 'unit' => $g], // Error intentional? No, use Parmesano
                     ['name' => 'Parmesano Reggiano', 'qty' => 150, 'unit' => $g],
-                ]
+                ],
             ],
             [
                 'name' => 'Pechuga de Pollo al Limón',
@@ -119,7 +120,7 @@ class RecipeSeeder extends Seeder
                     ['name' => 'Aceite de Oliva Virgen Extra', 'qty' => 15, 'unit' => $ml],
                     ['name' => 'Perejil Fresco', 'qty' => 5, 'unit' => $g],
                     ['name' => 'Sal Fina', 'qty' => 2, 'unit' => $g],
-                ]
+                ],
             ],
             [
                 'name' => 'Arroz Blanco de Guarnición',
@@ -133,7 +134,7 @@ class RecipeSeeder extends Seeder
                     ['name' => 'Ajo Seco Morado', 'qty' => 10, 'unit' => $g],
                     ['name' => 'Aceite de Oliva Virgen Extra', 'qty' => 20, 'unit' => $ml],
                     ['name' => 'Sal Fina', 'qty' => 5, 'unit' => $g],
-                ]
+                ],
             ],
             [
                 'name' => 'Receta Antigua (Borrada)',
@@ -142,7 +143,7 @@ class RecipeSeeder extends Seeder
                 'category' => 'Básicos',
                 'yield_portions' => 1,
                 'status' => 'archived',
-                'items' => []
+                'items' => [],
             ],
             [
                 'name' => 'Prueba de Coste Alto',
@@ -154,14 +155,25 @@ class RecipeSeeder extends Seeder
                 'items' => [
                     ['name' => 'Solomillo de Ternera', 'qty' => 200, 'unit' => $g],
                     ['name' => 'Jamón Ibérico de Bellota', 'qty' => 50, 'unit' => $g],
-                ]
+                ],
             ],
         ];
 
         foreach ($recipes as $data) {
             $items = $data['items'];
             unset($data['items']);
-            
+
+            $slug = $data['slug'];
+            $sourceFile = __DIR__."/data/{$slug}.png";
+
+            if (file_exists($sourceFile)) {
+                $path = "images/recipes/{$slug}.png";
+                Storage::disk('public')->put($path, file_get_contents($sourceFile));
+                $data['image_url'] = '/storage/'.$path;
+            } else {
+                $data['image_url'] = null;
+            }
+
             $recipe = Recipe::updateOrCreate(['slug' => $data['slug']], $data);
             $recipe->items()->delete(); // Clear items for idempotency
 

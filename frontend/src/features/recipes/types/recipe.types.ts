@@ -1,15 +1,32 @@
 import type { Id, ListSearch } from '@/types/common'
 
+export interface RecipeItem {
+  id: Id
+  ingredient_id: Id
+  ingredient_name?: string
+  quantity: number
+  unit?: {
+    id: Id
+    name: string
+    symbol: string
+  }
+  notes?: string | null
+}
+
 export interface Recipe {
   id: Id
   name: string
   slug: string
+  image_url?: string | null
   code?: string | null
   category?: string | null
   description?: string | null
   selling_price?: number | null
   status: 'draft' | 'active' | 'archived'
   is_subrecipe: boolean
+  yield_portions?: number
+  items_count?: number
+  items?: RecipeItem[]
 }
 
 export interface RecipeVersion {

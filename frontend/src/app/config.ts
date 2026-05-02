@@ -26,10 +26,21 @@ export const normalizeLocalDevUrl = (value: string, browserHost = typeof window 
   return url.toString()
 }
 
+const buildBackendUrl = (path: string, browserHost = typeof window === 'undefined' ? null : window.location.hostname) => {
+  const csrfUrl = normalizeLocalDevUrl(getEnv('VITE_SANCTUM_CSRF_URL', 'http://localhost:8080/sanctum/csrf-cookie'), browserHost)
+  const backendOrigin = new URL(csrfUrl).origin
+
+  return new URL(path, `${backendOrigin}/`).toString()
+}
+
 export const buildAppConfig = (browserHost = typeof window === 'undefined' ? null : window.location.hostname) => ({
   appName: getEnv('VITE_APP_NAME', 'Escandallo'),
   apiBaseUrl: normalizeLocalDevUrl(getEnv('VITE_API_BASE_URL', 'http://localhost:8080/api/v1'), browserHost),
   sanctumCsrfUrl: normalizeLocalDevUrl(getEnv('VITE_SANCTUM_CSRF_URL', 'http://localhost:8080/sanctum/csrf-cookie'), browserHost),
+  loginUrl: buildBackendUrl('/login', browserHost),
+  logoutUrl: buildBackendUrl('/logout', browserHost),
+  forgotPasswordUrl: buildBackendUrl('/forgot-password', browserHost),
+  resetPasswordUrl: buildBackendUrl('/reset-password', browserHost),
 }) as const
 
 export const appConfig = buildAppConfig()

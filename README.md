@@ -40,6 +40,35 @@ bash scripts/wsl/fresh-install.sh
 - Laravel/Nginx: `http://localhost:8080`
 - API: `http://localhost:8080/api/v1`
 
+## Credenciales demo
+
+Tras `php artisan migrate:fresh --seed` o `bash scripts/wsl/fresh-install.sh`, el seed crea usuarios privilegiados de prueba.
+
+- Password comun seed: `password`
+- Superadmins por defecto:
+  - `superadmin1@escandallo.test`
+  - `superadmin2@escandallo.test`
+- Admins por defecto:
+  - `admin@escandallo.test`
+  - `admin2@escandallo.test`
+  - `admin3@escandallo.test`
+  - `admin4@escandallo.test`
+  - `admin5@escandallo.test`
+
+Estas cuentas se configuran desde `backend/.env`:
+
+```env
+SEED_USER_PASSWORD=password
+SEED_SUPERADMIN_EMAILS=superadmin1@escandallo.test,superadmin2@escandallo.test
+SEED_ADMIN_EMAILS=admin@escandallo.test,admin2@escandallo.test,admin3@escandallo.test,admin4@escandallo.test,admin5@escandallo.test
+```
+
+Si cambias estas variables, vuelve a sembrar base:
+
+```bash
+docker compose exec backend php artisan migrate:fresh --seed
+```
+
 ### Arranque diario
 
 Si ya hiciste instalacion inicial, para arrancar proyecto no hace falta repetir `fresh-install.sh`.

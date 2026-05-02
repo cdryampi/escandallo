@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Search, ArrowUpDown, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import type { IngredientFilters } from '@/features/ingredients/types/ingredient.types'
@@ -31,13 +32,33 @@ export const IngredientTableFilters = ({ filters, onFiltersChange }: IngredientT
   }, [onFiltersChange, search])
 
   return (
-    <div className="flex flex-col gap-3 rounded-[var(--ds-radius-lg)] border border-border bg-surface-raised p-4 md:flex-row md:items-center">
-      <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Buscar ingrediente..." className="md:max-w-sm" />
-      <div className="flex gap-2">
-        <Button variant="outline" onClick={() => onFiltersChange({ direction: filters.direction === 'asc' ? 'desc' : 'asc' })}>
+    <div className="flex flex-col gap-3 rounded-[var(--ds-radius-lg)] border border-border bg-surface px-4 py-3 md:flex-row md:items-center justify-between shadow-sm">
+      <div className="relative flex-1 max-w-sm">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+        <Input 
+          value={search} 
+          onChange={(event) => setSearch(event.target.value)} 
+          placeholder="Filtrar por nombre o SKU..." 
+          className="pl-9 bg-surface-raised" 
+        />
+      </div>
+      <div className="flex items-center gap-2">
+        <Button 
+          variant="outline" 
+          size="sm"
+          className="gap-2 text-muted-foreground"
+          onClick={() => onFiltersChange({ direction: filters.direction === 'asc' ? 'desc' : 'asc' })}
+        >
+          <ArrowUpDown className="size-3.5" />
           Orden {filters.direction === 'asc' ? 'ascendente' : 'descendente'}
         </Button>
-        <Button variant="outline" onClick={() => onFiltersChange({ search: '', page: 1 })}>
+        <Button 
+          variant="ghost" 
+          size="sm"
+          className="gap-2 text-muted-foreground hover:text-foreground"
+          onClick={() => onFiltersChange({ search: '', page: 1 })}
+        >
+          <X className="size-3.5" />
           Limpiar
         </Button>
       </div>

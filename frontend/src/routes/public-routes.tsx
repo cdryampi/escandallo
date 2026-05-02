@@ -1,7 +1,33 @@
 import { createRoute } from '@tanstack/react-router'
 import type { AnyRoute } from '@tanstack/react-router'
-import { PublicLayout } from '@/layouts/public-layout'
-import { ContactPage, HomePage, LegalPage, MenuPage, PrivacyPage } from '@/features/public-site'
+import { lazyNamedRouteComponent } from '@/routes/lazy-route'
+
+const PublicLayout = lazyNamedRouteComponent(
+  () => import('@/layouts/public-layout'),
+  'PublicLayout',
+  {
+    title: 'Cargando sitio público',
+    description: 'Preparando navegación, contenido y tipografía editorial.',
+  },
+)
+
+const HomePage = lazyNamedRouteComponent(
+  () => import('@/features/public-site/pages/home-page'),
+  'HomePage',
+  {
+    title: 'Cargando portada',
+    description: 'Montando experiencia principal del sitio público.',
+  },
+)
+
+const PublicCmsPage = lazyNamedRouteComponent(
+  () => import('@/features/public-site/pages/public-cms-page'),
+  'PublicCmsPage',
+  {
+    title: 'Cargando contenido',
+    description: 'Preparando bloques editoriales de la página.',
+  },
+)
 
 export const buildPublicRoutes = (rootRoute: AnyRoute) => {
   const publicLayoutRoute = createRoute({
@@ -16,29 +42,11 @@ export const buildPublicRoutes = (rootRoute: AnyRoute) => {
     component: HomePage,
   })
 
-  const menuRoute = createRoute({
+  const cmsPageRoute = createRoute({
     getParentRoute: () => publicLayoutRoute,
-    path: '/carta',
-    component: MenuPage,
+    path: '$',
+    component: PublicCmsPage,
   })
 
-  const contactRoute = createRoute({
-    getParentRoute: () => publicLayoutRoute,
-    path: '/contacto',
-    component: ContactPage,
-  })
-
-  const legalRoute = createRoute({
-    getParentRoute: () => publicLayoutRoute,
-    path: '/legal',
-    component: LegalPage,
-  })
-
-  const privacyRoute = createRoute({
-    getParentRoute: () => publicLayoutRoute,
-    path: '/privacidad',
-    component: PrivacyPage,
-  })
-
-  return publicLayoutRoute.addChildren([homeRoute, menuRoute, contactRoute, legalRoute, privacyRoute])
+  return publicLayoutRoute.addChildren([homeRoute, cmsPageRoute])
 }

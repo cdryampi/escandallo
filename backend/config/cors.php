@@ -12,11 +12,11 @@ foreach ($configuredOrigins as $origin) {
 
     $url = parse_url($origin);
 
-    if (!isset($url['scheme'], $url['host'])) {
+    if (! isset($url['scheme'], $url['host'])) {
         continue;
     }
 
-    if (!in_array($url['host'], ['localhost', '127.0.0.1'], true)) {
+    if (! in_array($url['host'], ['localhost', '127.0.0.1'], true)) {
         continue;
     }
 
@@ -46,7 +46,17 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => [
+        'api/*',
+        'login',
+        'logout',
+        'register',
+        'forgot-password',
+        'reset-password',
+        'email/verification-notification',
+        'verify-email/*',
+        'sanctum/csrf-cookie',
+    ],
 
     'allowed_methods' => ['*'],
 

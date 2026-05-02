@@ -15,13 +15,16 @@ export const RecipeEditPage = ({ recipeId }: RecipeEditPageProps) => {
   const updateRecipeMutation = useUpdateRecipeMutation(recipeId)
 
   return (
-    <div className="space-y-6">
-      <BackofficePageHeader title="Editar receta" description="La shell del editor vive separada del fetch de detalle." />
-      {recipeQuery.isLoading ? <LoadingState /> : null}
+    <div className="space-y-8">
+      <BackofficePageHeader 
+        title="Editar Receta" 
+        description="Modifica la información básica, categoría y estado de publicación de la receta." 
+      />
+      {recipeQuery.isLoading ? <LoadingState title="Cargando receta" description="Recuperando datos base del recetario..." /> : null}
       {recipeQuery.isError ? (
         <ErrorState
-          title="No se pudo cargar la receta"
-          description="El backend aún puede no exponer detalle completo de receta."
+          title="Error al cargar receta"
+          description="No se ha podido recuperar la información de la receta para su edición."
           onRetry={() => recipeQuery.refetch()}
         />
       ) : null}

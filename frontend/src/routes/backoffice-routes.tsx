@@ -1,33 +1,219 @@
 import { createRoute } from '@tanstack/react-router'
 import type { AnyRoute } from '@tanstack/react-router'
-import { BackofficeLayout } from '@/layouts/backoffice-layout'
-import { DashboardPage } from '@/features/dashboard'
-import { CmsPagesPage } from '@/features/cms'
-import { SettingsPage } from '@/features/settings'
-import { UsersPage } from '@/features/users'
-import {
-  IngredientCreatePage,
-  IngredientEditPage,
-  IngredientListPage,
-  ingredientFiltersSchema,
-} from '@/features/ingredients'
+import { ingredientFiltersSchema } from '@/features/ingredients/schemas/ingredient.schema'
 import type { IngredientFiltersValues } from '@/features/ingredients/schemas/ingredient.schema'
-import { UnitsPage } from '@/features/units'
-import { SuppliersPage } from '@/features/suppliers'
-import { PricesPage } from '@/features/prices'
-import {
-  RecipeCostPage,
-  RecipeCreatePage,
-  RecipeDetailPage,
-  RecipeEditPage,
-  RecipeListPage,
-  recipesFiltersSchema,
-} from '@/features/recipes'
+import { recipesFiltersSchema } from '@/features/recipes/schemas/recipe.schema'
 import type { RecipesFiltersValues } from '@/features/recipes/schemas/recipe.schema'
-import { AllergensPage } from '@/features/allergens'
-import { ReportsPage } from '@/features/reports'
+import { lazyNamedRouteComponent } from '@/routes/lazy-route'
 
 type SearchUpdater<TSearch> = (previous: TSearch) => TSearch
+
+const BackofficeLayout = lazyNamedRouteComponent(
+  () => import('@/layouts/backoffice-layout'),
+  'BackofficeLayout',
+  {
+    title: 'Cargando backoffice',
+    description: 'Preparando shell de trabajo, navegación y permisos.',
+  },
+)
+
+const DashboardPage = lazyNamedRouteComponent(
+  () => import('@/features/dashboard/pages/dashboard-page'),
+  'DashboardPage',
+  {
+    title: 'Cargando dashboard',
+    description: 'Preparando métricas, tarjetas y resumen operativo.',
+  },
+)
+
+const SettingsPage = lazyNamedRouteComponent(
+  () => import('@/features/settings/pages/settings-page'),
+  'SettingsPage',
+  {
+    title: 'Cargando ajustes',
+    description: 'Preparando configuración general del backoffice.',
+  },
+)
+
+const CmsPagesPage = lazyNamedRouteComponent(
+  () => import('@/features/cms/pages/cms-pages-page'),
+  'CmsPagesPage',
+  {
+    title: 'Cargando páginas CMS',
+    description: 'Preparando gestión de contenido editable.',
+  },
+)
+
+const CmsEditorLayout = lazyNamedRouteComponent(
+  () => import('@/features/cms/layouts/cms-editor-layout'),
+  'CmsEditorLayout',
+  {
+    title: 'Cargando editor CMS',
+    description: 'Preparando el shell del editor y navegación interna.',
+  },
+)
+
+const CmsEditorContentPage = lazyNamedRouteComponent(
+  () => import('@/features/cms/pages/cms-editor-content-page'),
+  'CmsEditorContentPage',
+  {
+    title: 'Cargando bloques',
+    description: 'Preparando la estructura de bloques de la página.',
+  },
+)
+
+const CmsEditorSeoPage = lazyNamedRouteComponent(
+  () => import('@/features/cms/pages/cms-editor-seo-page'),
+  'CmsEditorSeoPage',
+  {
+    title: 'Cargando SEO',
+    description: 'Preparando metadatos y optimización para buscadores.',
+  },
+)
+
+const CmsEditorHistoryPage = lazyNamedRouteComponent(
+  () => import('@/features/cms/pages/cms-editor-history-page'),
+  'CmsEditorHistoryPage',
+  {
+    title: 'Cargando historial',
+    description: 'Preparando versiones anteriores de la página.',
+  },
+)
+
+const CmsEditorSettingsPage = lazyNamedRouteComponent(
+  () => import('@/features/cms/pages/cms-editor-settings-page'),
+  'CmsEditorSettingsPage',
+  {
+    title: 'Cargando configuración',
+    description: 'Preparando ajustes de ruta y visibilidad.',
+  },
+)
+
+const UsersPage = lazyNamedRouteComponent(
+  () => import('@/features/users/pages/users-page'),
+  'UsersPage',
+  {
+    title: 'Cargando usuarios',
+    description: 'Preparando permisos, roles y listado de usuarios.',
+  },
+)
+
+const IngredientListPage = lazyNamedRouteComponent<{ filters: IngredientFiltersValues; onFiltersChange: (patch: Partial<IngredientFiltersValues>) => void }>(
+  () => import('@/features/ingredients/pages/ingredient-list-page'),
+  'IngredientListPage',
+  {
+    title: 'Cargando ingredientes',
+    description: 'Preparando listado, filtros y acciones del catálogo.',
+  },
+)
+
+const IngredientCreatePage = lazyNamedRouteComponent(
+  () => import('@/features/ingredients/pages/ingredient-create-page'),
+  'IngredientCreatePage',
+  {
+    title: 'Cargando alta de ingrediente',
+    description: 'Preparando formulario para crear un ingrediente nuevo.',
+  },
+)
+
+const IngredientEditPage = lazyNamedRouteComponent<{ ingredientId: string }>(
+  () => import('@/features/ingredients/pages/ingredient-edit-page'),
+  'IngredientEditPage',
+  {
+    title: 'Cargando edición de ingrediente',
+    description: 'Preparando datos y formulario del ingrediente.',
+  },
+)
+
+const UnitsPage = lazyNamedRouteComponent(
+  () => import('@/features/units/pages/units-page'),
+  'UnitsPage',
+  {
+    title: 'Cargando unidades',
+    description: 'Preparando catálogo de unidades y equivalencias.',
+  },
+)
+
+const SuppliersPage = lazyNamedRouteComponent(
+  () => import('@/features/suppliers/pages/suppliers-page'),
+  'SuppliersPage',
+  {
+    title: 'Cargando proveedores',
+    description: 'Preparando listado y mantenimiento de proveedores.',
+  },
+)
+
+const PricesPage = lazyNamedRouteComponent(
+  () => import('@/features/prices/pages/prices-page'),
+  'PricesPage',
+  {
+    title: 'Cargando precios',
+    description: 'Preparando histórico y control de precios.',
+  },
+)
+
+const RecipeListPage = lazyNamedRouteComponent<{ filters: RecipesFiltersValues; onFiltersChange: (patch: Partial<RecipesFiltersValues>) => void }>(
+  () => import('@/features/recipes/pages/recipe-list-page'),
+  'RecipeListPage',
+  {
+    title: 'Cargando recetas',
+    description: 'Preparando filtros, tabla y resumen de recetas.',
+  },
+)
+
+const RecipeCreatePage = lazyNamedRouteComponent(
+  () => import('@/features/recipes/pages/recipe-create-page'),
+  'RecipeCreatePage',
+  {
+    title: 'Cargando nueva receta',
+    description: 'Preparando editor y estructura base de receta.',
+  },
+)
+
+const RecipeDetailPage = lazyNamedRouteComponent<{ recipeId: string }>(
+  () => import('@/features/recipes/pages/recipe-detail-page'),
+  'RecipeDetailPage',
+  {
+    title: 'Cargando detalle de receta',
+    description: 'Preparando ficha completa y trazabilidad de receta.',
+  },
+)
+
+const RecipeEditPage = lazyNamedRouteComponent<{ recipeId: string }>(
+  () => import('@/features/recipes/pages/recipe-edit-page'),
+  'RecipeEditPage',
+  {
+    title: 'Cargando edición de receta',
+    description: 'Preparando editor y costes de la receta.',
+  },
+)
+
+const RecipeCostPage = lazyNamedRouteComponent<{ versionId: string }>(
+  () => import('@/features/recipes/pages/recipe-cost-page'),
+  'RecipeCostPage',
+  {
+    title: 'Cargando coste de receta',
+    description: 'Preparando cálculo detallado y desglose de costes.',
+  },
+)
+
+const AllergensPage = lazyNamedRouteComponent(
+  () => import('@/features/allergens/pages/allergens-page'),
+  'AllergensPage',
+  {
+    title: 'Cargando alérgenos',
+    description: 'Preparando catálogo y vinculación de alérgenos.',
+  },
+)
+
+const ReportsPage = lazyNamedRouteComponent(
+  () => import('@/features/reports/pages/reports-page'),
+  'ReportsPage',
+  {
+    title: 'Cargando informes',
+    description: 'Preparando informes y paneles analíticos.',
+  },
+)
 
 export const buildBackofficeRoutes = (rootRoute: AnyRoute) => {
   const backofficeRoute = createRoute({
@@ -60,10 +246,49 @@ export const buildBackofficeRoutes = (rootRoute: AnyRoute) => {
     component: CmsPagesPage,
   })
 
-  const cmsEditRoute = createRoute({
+  const cmsEditorLayoutRoute = createRoute({
     getParentRoute: () => backofficeRoute,
-    path: 'cms/pages/$pageId/edit',
-    component: CmsPagesPage,
+    path: 'cms/pages/$pageId',
+    component: CmsEditorLayout,
+  })
+
+  const cmsEditorIndexRoute = createRoute({
+    getParentRoute: () => cmsEditorLayoutRoute,
+    path: '/',
+    component: () => {
+      const { pageId } = cmsEditorLayoutRoute.useParams()
+      const navigate = cmsEditorLayoutRoute.useNavigate()
+      void navigate({
+        to: '/backoffice/cms/pages/$pageId/content',
+        params: { pageId },
+        replace: true,
+      })
+      return null
+    },
+  })
+
+  const cmsEditorContentRoute = createRoute({
+    getParentRoute: () => cmsEditorLayoutRoute,
+    path: 'content',
+    component: CmsEditorContentPage,
+  })
+
+  const cmsEditorSeoRoute = createRoute({
+    getParentRoute: () => cmsEditorLayoutRoute,
+    path: 'seo',
+    component: CmsEditorSeoPage,
+  })
+
+  const cmsEditorHistoryRoute = createRoute({
+    getParentRoute: () => cmsEditorLayoutRoute,
+    path: 'history',
+    component: CmsEditorHistoryPage,
+  })
+
+  const cmsEditorSettingsRoute = createRoute({
+    getParentRoute: () => cmsEditorLayoutRoute,
+    path: 'settings',
+    component: CmsEditorSettingsPage,
   })
 
   const usersRoute = createRoute({
@@ -222,7 +447,13 @@ export const buildBackofficeRoutes = (rootRoute: AnyRoute) => {
     settingsRoute,
     cmsPagesRoute,
     cmsCreateRoute,
-    cmsEditRoute,
+    cmsEditorLayoutRoute.addChildren([
+      cmsEditorIndexRoute,
+      cmsEditorContentRoute,
+      cmsEditorSeoRoute,
+      cmsEditorHistoryRoute,
+      cmsEditorSettingsRoute,
+    ]),
     usersRoute,
     ingredientsRoute,
     ingredientCreateRoute,

@@ -7,8 +7,11 @@ export const IngredientCreatePage = () => {
   const createIngredientMutation = useCreateIngredientMutation()
 
   return (
-    <div className="space-y-6">
-      <BackofficePageHeader title="Nuevo ingrediente" description="Formulario modular con RHF + Zod dentro del feature." />
+    <div className="space-y-8">
+      <BackofficePageHeader 
+        title="Nuevo Ingrediente" 
+        description="Registra una nueva materia prima en el catálogo central para su uso en escandallos." 
+      />
       <IngredientForm
         isSubmitting={createIngredientMutation.isPending}
         onSubmit={(values) =>

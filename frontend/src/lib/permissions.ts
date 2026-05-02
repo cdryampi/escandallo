@@ -5,7 +5,7 @@ export const can = (user: PermissionUser | null | undefined, permission: string)
     return false
   }
 
-  if (user.role === 'admin') {
+  if (user.role === 'admin' || user.role === 'superadmin') {
     return true
   }
 

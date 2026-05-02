@@ -4,7 +4,7 @@ import type { Recipe, RecipeFilters, RecipeRequest } from '@/features/recipes/ty
 
 export const recipesApi = {
   list(filters: RecipeFilters) {
-    return apiClient.get<PaginatedResponse<Recipe>>('/recipes', {
+    return apiClient.get<PaginatedResponse<Recipe>>('recipes', {
       params: {
         page: filters.page,
         per_page: filters.perPage,
@@ -16,12 +16,12 @@ export const recipesApi = {
     })
   },
   detail(id: string) {
-    return apiClient.get<ApiResponse<Recipe>>(`/recipes/${id}`)
+    return apiClient.get<ApiResponse<Recipe>>(`recipes/${id}`)
   },
   create(payload: RecipeRequest) {
-    return apiClient.post<ApiResponse<Recipe>>('/recipes', payload)
+    return apiClient.post<ApiResponse<Recipe>>('recipes', payload)
   },
   update(id: string, payload: RecipeRequest) {
-    return apiClient.put<ApiResponse<Recipe>>(`/recipes/${id}`, payload)
+    return apiClient.put<ApiResponse<Recipe>>(`recipes/${id}`, payload)
   },
 }

@@ -11,6 +11,9 @@ const headers = {
 const instance = axios.create({
   baseURL: appConfig.apiBaseUrl,
   withCredentials: true,
+  withXSRFToken: true,
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
   headers,
 })
 

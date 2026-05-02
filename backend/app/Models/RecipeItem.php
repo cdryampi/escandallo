@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Database\Factories\RecipeItemFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class RecipeItem extends Model
 {
-    /** @use HasFactory<\Database\Factories\RecipeItemFactory> */
+    /** @use HasFactory<RecipeItemFactory> */
     use HasFactory;
 
     protected $fillable = [

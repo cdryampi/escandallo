@@ -10,9 +10,9 @@ export const Table = ({ className, ...props }: TableHTMLAttributes<HTMLTableElem
 )
 
 export const TableHeadCell = ({ className, ...props }: ThHTMLAttributes<HTMLTableCellElement>) => (
-  <th className={cn('bg-surface-muted px-4 py-3 type-label-md text-muted-foreground', className)} {...props} />
+  <th className={cn('bg-surface-muted px-4 py-2 type-label-md text-muted-foreground', className)} {...props} />
 )
 
 export const TableCell = ({ className, ...props }: TdHTMLAttributes<HTMLTableCellElement>) => (
-  <td className={cn('px-4 py-3 type-body-md text-foreground', className)} {...props} />
+  <td className={cn('px-4 py-2.5 type-body-md text-foreground', className)} {...props} />
 )

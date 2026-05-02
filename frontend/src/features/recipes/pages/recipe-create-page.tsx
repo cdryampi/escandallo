@@ -8,8 +8,11 @@ export const RecipeCreatePage = () => {
   const createRecipeMutation = useCreateRecipeMutation()
 
   return (
-    <div className="space-y-6">
-      <BackofficePageHeader title="Nueva receta" description="Editor dividido desde el principio para evitar páginas monolíticas." />
+    <div className="space-y-8">
+      <BackofficePageHeader 
+        title="Nueva Receta" 
+        description="Define la información base de una nueva receta. Podrás añadir los ingredientes en el siguiente paso." 
+      />
       <RecipeEditorShell
         preview={null}
         isSubmitting={createRecipeMutation.isPending}

@@ -1,5 +1,6 @@
 import { UnauthorizedError } from '@/api/api-error'
 import { apiClient, ensureCsrfCookie } from '@/api/http-client'
+import { appConfig } from '@/app/config'
 import type { CurrentUser, ForgotPasswordRequest, LoginRequest, ResetPasswordRequest } from '@/features/auth/types/auth.types'
 
 const normalizeCurrentUser = (user: CurrentUser): CurrentUser => ({
@@ -11,7 +12,7 @@ const normalizeCurrentUser = (user: CurrentUser): CurrentUser => ({
 export const authApi = {
   async getCurrentUser() {
     try {
-      const user = await apiClient.get<CurrentUser>('/user')
+      const user = await apiClient.get<CurrentUser>('user')
       return normalizeCurrentUser(user)
     } catch (error) {
       if (error instanceof UnauthorizedError) {
@@ -23,18 +24,18 @@ export const authApi = {
   },
   async login(payload: LoginRequest) {
     await ensureCsrfCookie()
-    await apiClient.post('/login', payload)
-    const user = await apiClient.get<CurrentUser>('/user')
+    await apiClient.post(appConfig.loginUrl, payload)
+    const user = await apiClient.get<CurrentUser>('user')
 
     return normalizeCurrentUser(user)
   },
   async logout() {
-    await apiClient.post('/logout')
+    await apiClient.post(appConfig.logoutUrl)
   },
   async forgotPassword(payload: ForgotPasswordRequest) {
-    return apiClient.post<{ message?: string }>('/forgot-password', payload)
+    return apiClient.post<{ message?: string }>(appConfig.forgotPasswordUrl, payload)
   },
   async resetPassword(payload: ResetPasswordRequest) {
-    return apiClient.post<{ message?: string }>('/reset-password', payload)
+    return apiClient.post<{ message?: string }>(appConfig.resetPasswordUrl, payload)
   },
 }

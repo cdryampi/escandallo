@@ -5,7 +5,7 @@ import { PublicFooter } from '@/components/layout/public-footer'
 export const PublicLayout = () => (
   <div className="min-h-screen bg-background text-foreground">
     <PublicHeader />
-    <main>
+    <main role="main" id="main-content">
       <Outlet />
     </main>
     <PublicFooter />

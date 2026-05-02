@@ -1,6 +1,5 @@
 import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
 import type { QueryClient } from '@tanstack/react-query'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { buildAuthRoutes } from '@/routes/auth-routes'
 import { buildPublicRoutes } from '@/routes/public-routes'
 import { buildBackofficeRoutes } from '@/routes/backoffice-routes'
@@ -13,16 +12,30 @@ const RootComponent = () => <Outlet />
 
 const NotFoundComponent = () => (
   <div className="flex min-h-screen items-center justify-center bg-background px-6">
-    <Card className="max-w-lg">
-      <CardHeader>
-        <CardTitle>Ruta no encontrada</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="type-body-sm text-muted-foreground">
-          La navegación existe, pero esta URL no forma parte de la arquitectura definida.
-        </p>
-      </CardContent>
-    </Card>
+    <div className="max-w-md text-center space-y-6">
+      <p className="ui-kicker">Página no encontrada</p>
+      <h1 className="type-display-md text-foreground">
+        Esta página no existe.
+      </h1>
+      <p className="type-body-lg text-muted-foreground">
+        Quizás el enlace ha cambiado o la dirección no es correcta.
+        Puede volver al inicio o consultar nuestra carta.
+      </p>
+      <div className="flex flex-wrap justify-center gap-4 pt-2">
+        <a
+          href="/"
+          className="inline-flex items-center gap-2 rounded-lg bg-brand px-6 py-3 type-label-md text-white transition-all hover:bg-brand-strong"
+        >
+          Volver al inicio
+        </a>
+        <a
+          href="/carta"
+          className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 type-label-md text-foreground transition-all hover:border-brand hover:text-brand"
+        >
+          Ver la carta
+        </a>
+      </div>
+    </div>
   </div>
 )
 

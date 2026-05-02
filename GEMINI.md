@@ -55,3 +55,34 @@ No usar Gemini CLI para:
 
 - Si tarea mezcla arquitectura, multiples features o cambios de contrato, Gemini CLI puede analizar y Codex implementa.
 - Si tarea es principalmente UX/UI, Gemini CLI puede apoyar con contexto, pero Antigravity debe revisar experiencia final.
+
+## Login Local Para QA
+
+Cuando Gemini CLI, Codex o un agente de QA necesiten entrar al backoffice local:
+
+- Frontend local: `http://localhost:5173`
+- Backend local: `http://localhost:8080`
+- Password comun seed: `password`
+- Superadmins por defecto:
+  - `superadmin1@escandallo.test`
+  - `superadmin2@escandallo.test`
+- Admins por defecto:
+  - `admin@escandallo.test`
+  - `admin2@escandallo.test`
+  - `admin3@escandallo.test`
+  - `admin4@escandallo.test`
+  - `admin5@escandallo.test`
+
+Estas cuentas salen del seed controlado por `backend/.env`:
+
+```env
+SEED_USER_PASSWORD=password
+SEED_SUPERADMIN_EMAILS=superadmin1@escandallo.test,superadmin2@escandallo.test
+SEED_ADMIN_EMAILS=admin@escandallo.test,admin2@escandallo.test,admin3@escandallo.test,admin4@escandallo.test,admin5@escandallo.test
+```
+
+Si el agente necesita refrescar cuentas demo:
+
+```bash
+docker compose exec backend php artisan migrate:fresh --seed
+```

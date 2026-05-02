@@ -7,6 +7,8 @@ use App\Models\Ingredient;
 use App\Models\Supplier;
 use App\Models\Unit;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class IngredientSeeder extends Seeder
 {
@@ -31,7 +33,7 @@ class IngredientSeeder extends Seeder
             ['name' => 'Azúcar Blanquilla', 'sku' => 'ING-012', 'unit_id' => $kg, 'supplier_id' => $suppliers['Mercamadrid Central'], 'cost_per_unit' => 1.10, 'waste_percentage' => 0, 'allergens' => []],
             ['name' => 'Pimienta Negra', 'sku' => 'ING-013', 'unit_id' => $kg, 'supplier_id' => $suppliers['Gourmet Mediterráneo'], 'cost_per_unit' => 14.20, 'waste_percentage' => 0, 'allergens' => []],
             ['name' => 'Pimentón de la Vera', 'sku' => 'ING-014', 'unit_id' => $kg, 'supplier_id' => $suppliers['Gourmet Mediterráneo'], 'cost_per_unit' => 12.50, 'waste_percentage' => 0, 'allergens' => []],
-            
+
             // Frescos
             ['name' => 'Cebolla Amarilla', 'sku' => 'ING-009', 'unit_id' => $kg, 'supplier_id' => $suppliers['Frutas Doña Ana'], 'cost_per_unit' => 1.10, 'waste_percentage' => 15, 'allergens' => []],
             ['name' => 'Ajo Seco Morado', 'sku' => 'ING-015', 'unit_id' => $kg, 'supplier_id' => $suppliers['Huerta de Aranjuez'], 'cost_per_unit' => 3.80, 'waste_percentage' => 20, 'allergens' => []],
@@ -84,10 +86,21 @@ class IngredientSeeder extends Seeder
         foreach ($ingredientsData as $data) {
             $allergenCodes = $data['allergens'] ?? [];
             unset($data['allergens']);
-            
+
+            $slug = Str::slug($data['name']);
+            $sourceFile = __DIR__."/data/{$slug}.png";
+
+            if (file_exists($sourceFile)) {
+                $path = "images/ingredients/{$slug}.png";
+                Storage::disk('public')->put($path, file_get_contents($sourceFile));
+                $data['image_url'] = '/storage/'.$path;
+            } else {
+                $data['image_url'] = null;
+            }
+
             $ingredient = Ingredient::updateOrCreate(['sku' => $data['sku']], $data);
-            
-            $allergenIds = array_map(fn($code) => $allergens[$code], $allergenCodes);
+
+            $allergenIds = array_map(fn ($code) => $allergens[$code], $allergenCodes);
             $ingredient->allergens()->sync($allergenIds);
         }
     }

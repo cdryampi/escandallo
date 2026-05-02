@@ -1,8 +1,14 @@
 .agents/
 .codex/
+.gemini/
 .env
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
 cookies.txt
+*.tmp
+*.temp
+*.bak
+*.orig
+frontend/null

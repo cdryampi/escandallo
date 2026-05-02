@@ -17,7 +17,11 @@ describe('normalizeLocalDevUrl', () => {
 
 describe('buildAppConfig', () => {
   it('builds same-host local API URLs for localhost browser sessions', () => {
-    expect(buildAppConfig('localhost').apiBaseUrl).toBe('http://localhost:8080/api/v1')
-    expect(buildAppConfig('localhost').sanctumCsrfUrl).toBe('http://localhost:8080/sanctum/csrf-cookie')
+    const config = buildAppConfig('localhost')
+
+    expect(config.apiBaseUrl).toBe('http://localhost:8080/api/v1')
+    expect(config.sanctumCsrfUrl).toBe('http://localhost:8080/sanctum/csrf-cookie')
+    expect(config.loginUrl).toBe('http://localhost:8080/login')
+    expect(config.logoutUrl).toBe('http://localhost:8080/logout')
   })
 })

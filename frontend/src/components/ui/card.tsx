@@ -6,7 +6,7 @@ export const Card = ({ className, ...props }: HTMLAttributes<HTMLDivElement>) =>
 )
 
 export const CardHeader = ({ className, ...props }: HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn('flex flex-col gap-1 border-b border-surface-strong px-5 py-4', className)} {...props} />
+  <div className={cn('flex flex-col gap-1 border-b border-surface-strong px-6 py-4', className)} {...props} />
 )
 
 export const CardTitle = ({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) => (
@@ -18,5 +18,5 @@ export const CardDescription = ({ className, ...props }: HTMLAttributes<HTMLPara
 )
 
 export const CardContent = ({ className, ...props }: HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn('px-5 py-4', className)} {...props} />
+  <div className={cn('px-6 py-5', className)} {...props} />
 )

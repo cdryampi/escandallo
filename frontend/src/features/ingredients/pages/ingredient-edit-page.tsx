@@ -15,14 +15,17 @@ export const IngredientEditPage = ({ ingredientId }: IngredientEditPageProps) =>
   const updateIngredientMutation = useUpdateIngredientMutation(ingredientId)
 
   return (
-    <div className="space-y-6">
-      <BackofficePageHeader title="Editar ingrediente" description="La página orquesta; el formulario vive en componente propio." />
+    <div className="space-y-8">
+      <BackofficePageHeader 
+        title="Editar Ingrediente" 
+        description="Actualiza la información técnica, alérgenos y parámetros de rendimiento de la materia prima." 
+      />
 
-      {ingredientQuery.isLoading ? <LoadingState /> : null}
+      {ingredientQuery.isLoading ? <LoadingState title="Cargando ingrediente" description="Recuperando ficha técnica..." /> : null}
       {ingredientQuery.isError ? (
         <ErrorState
-          title="No se pudo cargar el ingrediente"
-          description="El backend aún puede no exponer detalle de ingredientes."
+          title="Error al recuperar ingrediente"
+          description="No ha sido posible cargar los datos actuales del ingrediente. Por favor, inténtalo de nuevo."
           onRetry={() => ingredientQuery.refetch()}
         />
       ) : null}

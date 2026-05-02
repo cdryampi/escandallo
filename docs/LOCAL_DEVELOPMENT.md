@@ -39,6 +39,14 @@ docker compose exec frontend npm run lint
 docker compose exec frontend npm run typecheck
 ```
 
+## Nota sobre Vite y cambios estructurales UI
+
+Si despues de cambios en `src/components/ui`, `src/index.css` o imports base el navegador sigue mostrando modulos viejos, reinicia solo el servicio frontend y haz hard refresh.
+
+```bash
+docker compose restart frontend
+```
+
 ## Shells utiles
 ```bash
 bash scripts/wsl/shell-backend.sh
@@ -51,3 +59,32 @@ bash scripts/wsl/mysql.sh
 - Laravel/Nginx: `http://localhost:8080`
 - API base: `http://localhost:8080/api/v1`
 - MySQL host: `127.0.0.1:3307`
+
+## Usuarios demo seed
+
+El seeder local crea usuarios privilegiados para login de backoffice y QA local.
+
+- Password comun: `password`
+- Superadmins por defecto:
+  - `superadmin1@escandallo.test`
+  - `superadmin2@escandallo.test`
+- Admins por defecto:
+  - `admin@escandallo.test`
+  - `admin2@escandallo.test`
+  - `admin3@escandallo.test`
+  - `admin4@escandallo.test`
+  - `admin5@escandallo.test`
+
+Variables que controlan este seed en `backend/.env`:
+
+```env
+SEED_USER_PASSWORD=password
+SEED_SUPERADMIN_EMAILS=superadmin1@escandallo.test,superadmin2@escandallo.test
+SEED_ADMIN_EMAILS=admin@escandallo.test,admin2@escandallo.test,admin3@escandallo.test,admin4@escandallo.test,admin5@escandallo.test
+```
+
+Si cambias emails o password:
+
+```bash
+docker compose exec backend php artisan migrate:fresh --seed
+```

@@ -19,8 +19,20 @@ describe('permissions helpers', () => {
     permissions: [],
   }
 
+  const superadmin: PermissionUser = {
+    id: 3,
+    name: 'Superadmin',
+    email: 'superadmin@example.com',
+    role: 'superadmin',
+    permissions: [],
+  }
+
   it('grants admins every action in UI helpers', () => {
     expect(can(admin, 'reports.view')).toBe(true)
+  })
+
+  it('grants superadmins every action in UI helpers', () => {
+    expect(can(superadmin, 'users.delete')).toBe(true)
   })
 
   it('checks explicit permissions for non-admin users', () => {

@@ -4,14 +4,20 @@ export interface Ingredient {
   id: Id
   name: string
   sku?: string | null
+  image_url?: string | null
   notes?: string | null
   is_active: boolean
-  default_waste_percentage?: number | string
-  default_yield_percentage?: number | string
+  cost_per_unit?: string | number | null
+  default_waste_percentage?: string | number
+  default_yield_percentage?: string | number
   base_unit?: {
     id: Id
     name: string
     symbol: string
+  } | null
+  supplier?: {
+    id: Id
+    name: string
   } | null
 }
 
