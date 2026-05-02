@@ -7,6 +7,7 @@ import {
   Package,
   Scale,
   Settings,
+  ShieldCheck,
   ShoppingBasket,
   Users,
 } from 'lucide-react'
@@ -19,10 +20,11 @@ export interface NavigationItem {
 
 export const backofficeNavigation: NavigationItem[] = [
   { label: 'Dashboard', to: '/backoffice', icon: LayoutDashboard },
-  { label: 'Ingredientes', to: '/backoffice/ingredients', icon: Package },
-  { label: 'Unidades', to: '/backoffice/units', icon: Scale },
-  { label: 'Proveedores', to: '/backoffice/suppliers', icon: ShoppingBasket },
   { label: 'Recetas', to: '/backoffice/recipes', icon: BookOpenText },
+  { label: 'Ingredientes', to: '/backoffice/ingredients', icon: Package },
+  { label: 'Proveedores', to: '/backoffice/suppliers', icon: ShoppingBasket },
+  { label: 'Alérgenos', to: '/backoffice/allergens', icon: ShieldCheck },
+  { label: 'Unidades', to: '/backoffice/units', icon: Scale },
   { label: 'CMS', to: '/backoffice/cms/pages', icon: FileText },
   { label: 'Usuarios', to: '/backoffice/users', icon: Users },
   { label: 'Reportes', to: '/backoffice/reports', icon: ChartColumnBig },

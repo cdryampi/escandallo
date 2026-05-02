@@ -25,6 +25,8 @@ RUN apt-get update \
         pdo \
         pdo_mysql \
         zip \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug \
     && groupadd --gid "${GID}" appuser \
     && useradd --uid "${UID}" --gid appuser --create-home --shell /bin/bash appuser \
     && apt-get clean \

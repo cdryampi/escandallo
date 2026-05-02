@@ -21,6 +21,16 @@ interface CmsEditorState {
   // Device emulation
   deviceMode: 'mobile' | 'tablet' | 'desktop'
   setDeviceMode: (mode: 'mobile' | 'tablet' | 'desktop') => void
+
+  // Custom canvas width for resizable mode
+  customWidth: number | null
+  setCustomWidth: (width: number | null) => void
+
+  // Panel visibility
+  showSidebar: boolean
+  setShowSidebar: (show: boolean) => void
+  showInspector: boolean
+  setShowInspector: (show: boolean) => void
 }
 
 export const useCmsEditorStore = create<CmsEditorState>((set) => ({
@@ -40,5 +50,13 @@ export const useCmsEditorStore = create<CmsEditorState>((set) => ({
   setViewMode: (mode) => set({ viewMode: mode }),
 
   deviceMode: 'desktop',
-  setDeviceMode: (mode) => set({ deviceMode: mode }),
+  setDeviceMode: (mode) => set({ deviceMode: mode, customWidth: null }),
+
+  customWidth: null,
+  setCustomWidth: (width) => set({ customWidth: width }),
+
+  showSidebar: true,
+  setShowSidebar: (show) => set({ showSidebar: show }),
+  showInspector: true,
+  setShowInspector: (show) => set({ showInspector: show }),
 }))

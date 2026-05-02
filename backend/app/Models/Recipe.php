@@ -22,9 +22,17 @@ class Recipe extends Model
         'image_url',
     ];
 
-    protected $casts = [
-        'yield_portions' => 'decimal:2',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'yield_portions' => 'decimal:2',
+        ];
+    }
 
     public function items(): HasMany
     {

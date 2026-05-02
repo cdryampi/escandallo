@@ -21,10 +21,18 @@ class RecipeItem extends Model
         'sort_order',
     ];
 
-    protected $casts = [
-        'quantity' => 'decimal:4',
-        'sort_order' => 'integer',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'quantity' => 'decimal:4',
+            'sort_order' => 'integer',
+        ];
+    }
 
     public function recipe(): BelongsTo
     {

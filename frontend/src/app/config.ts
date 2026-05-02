@@ -34,7 +34,7 @@ const buildBackendUrl = (path: string, browserHost = typeof window === 'undefine
 }
 
 export const buildAppConfig = (browserHost = typeof window === 'undefined' ? null : window.location.hostname) => ({
-  appName: getEnv('VITE_APP_NAME', 'Escandallo'),
+  appName: getEnv('VITE_APP_NAME', 'Restaurante'),
   apiBaseUrl: normalizeLocalDevUrl(getEnv('VITE_API_BASE_URL', 'http://localhost:8080/api/v1'), browserHost),
   sanctumCsrfUrl: normalizeLocalDevUrl(getEnv('VITE_SANCTUM_CSRF_URL', 'http://localhost:8080/sanctum/csrf-cookie'), browserHost),
   loginUrl: buildBackendUrl('/login', browserHost),

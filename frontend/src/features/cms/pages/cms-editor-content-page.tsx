@@ -1,18 +1,8 @@
 import { useEffect } from 'react'
 import { useParams } from '@tanstack/react-router'
 import {
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  closestCenter,
-  type DragEndEvent,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core'
-import {
   SortableContext,
   arrayMove,
-  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { Eye, Layout, Save, Settings2 } from 'lucide-react'
@@ -25,12 +15,12 @@ import {
 import { ErrorState } from '@/components/feedback/error-state'
 import { LoadingState } from '@/components/feedback/loading-state'
 import { Button } from '@/components/ui/button'
-import { CmsRenderer } from '@/features/public-site/components/cms-renderer'
 import type { BlockType } from '@/types/cms'
 import { createDefaultBlock } from '@/types/cms'
 import { BlockSelector } from '../components/BlockSelector'
 import { SortableBlockItem } from '../components/SortableBlockItem'
 import { useCmsEditorStore } from '../stores/cms-editor-store'
+import { EditorCanvasRenderer } from '../components/EditorCanvasRenderer'
 
 export const CmsEditorContentPage = () => {
   const { pageId } = useParams({ from: '/backoffice/cms/pages/$pageId' })
@@ -58,16 +48,11 @@ export const CmsEditorContentPage = () => {
     viewMode,
     setViewMode,
     deviceMode,
+    customWidth,
+    setCustomWidth,
   } = useCmsEditorStore()
 
   const updateVersion = useUpdatePageVersion()
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  )
 
   useEffect(() => {
     if (!draft) return
@@ -130,16 +115,6 @@ export const CmsEditorContentPage = () => {
     setWorkingBlocks(arrayMove(workingBlocks, index, targetIndex))
   }
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event
-    if (!over || active.id === over.id) return
-
-    const oldIndex = workingBlocks.findIndex((block) => block.id === active.id)
-    const newIndex = workingBlocks.findIndex((block) => block.id === over.id)
-
-    setWorkingBlocks(arrayMove(workingBlocks, oldIndex, newIndex))
-  }
-
   const handleAddBlock = (type: BlockType) => {
     const newBlock = createDefaultBlock(type)
     setWorkingBlocks([...workingBlocks, newBlock])
@@ -147,16 +122,50 @@ export const CmsEditorContentPage = () => {
   }
 
   const handleSave = () => {
+    // Explicitly use the latest workingBlocks from the store/state
     updateVersion.mutate(
       { versionId: draft.id, data: { blocks: workingBlocks } },
-      { onSuccess: () => toast.success('Contenido guardado correctamente.') }
+      { 
+        onSuccess: () => {
+          toast.success('Cambios guardados', {
+            description: 'El contenido de la página se ha actualizado en el servidor.',
+          })
+        },
+        onError: (error) => {
+          toast.error('Error al guardar', {
+            description: error instanceof Error ? error.message : 'No se pudo persistir el contenido.',
+          })
+        }
+      }
     )
   }
 
-  const canvasWidths = {
-    mobile: 'max-w-[375px]',
-    tablet: 'max-w-[768px]',
-    desktop: 'max-w-none',
+  const canvasWidths: Record<string, string> = {
+    mobile: '375px',
+    tablet: '768px',
+    desktop: '100%',
+  }
+
+  const handleResize = (e: React.MouseEvent | MouseEvent) => {
+    const container = document.getElementById('canvas-container')
+    if (!container) return
+
+    const rect = container.getBoundingClientRect()
+    // Calculate width relative to the center of the viewport
+    const newWidth = Math.abs((e.clientX - (rect.left + rect.width / 2)) * 2)
+    const constrainedWidth = Math.min(Math.max(newWidth, 320), rect.width)
+    setCustomWidth(constrainedWidth)
+  }
+
+  const startResizing = (e: React.MouseEvent) => {
+    e.preventDefault()
+    document.addEventListener('mousemove', handleResize)
+    document.addEventListener('mouseup', stopResizing)
+  }
+
+  const stopResizing = () => {
+    document.removeEventListener('mousemove', handleResize)
+    document.removeEventListener('mouseup', stopResizing)
   }
 
   return (
@@ -193,9 +202,9 @@ export const CmsEditorContentPage = () => {
         </Button>
       </div>
 
-      <div className="flex-1">
+      <div className="flex-1 min-h-0 flex flex-col" id="canvas-container">
         {viewMode === 'structure' ? (
-          <div className="mx-auto max-w-3xl space-y-4">
+          <div className="mx-auto w-full max-w-3xl space-y-4">
             {workingBlocks.length === 0 ? (
               <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border bg-white/50 py-32 text-center">
                 <div className="mb-4 rounded-full bg-surface-container p-6">
@@ -209,33 +218,27 @@ export const CmsEditorContentPage = () => {
               </div>
             ) : (
               <>
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
+                <SortableContext
+                  items={workingBlocks.map((block) => block.id)}
+                  strategy={verticalListSortingStrategy}
                 >
-                  <SortableContext
-                    items={workingBlocks.map((block) => block.id)}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    <div className="space-y-3 pb-20">
-                      {workingBlocks.map((block, index) => (
-                        <SortableBlockItem
-                          key={block.id}
-                          block={block}
-                          isActive={selectedBlockId === block.id}
-                          onEdit={() => setSelectedBlockId(block.id)}
-                          onToggleVisibility={() => handleToggleVisibility(block.id)}
-                          onDelete={() => handleDeleteBlock(block.id)}
-                          onMoveUp={() => handleMove(index, 'up')}
-                          onMoveDown={() => handleMove(index, 'down')}
-                          isFirst={index === 0}
-                          isLast={index === workingBlocks.length - 1}
-                        />
-                      ))}
-                    </div>
-                  </SortableContext>
-                </DndContext>
+                  <div className="space-y-3 pb-20">
+                    {workingBlocks.map((block, index) => (
+                      <SortableBlockItem
+                        key={block.id}
+                        block={block}
+                        isActive={selectedBlockId === block.id}
+                        onEdit={() => setSelectedBlockId(block.id)}
+                        onToggleVisibility={() => handleToggleVisibility(block.id)}
+                        onDelete={() => handleDeleteBlock(block.id)}
+                        onMoveUp={() => handleMove(index, 'up')}
+                        onMoveDown={() => handleMove(index, 'down')}
+                        isFirst={index === 0}
+                        isLast={index === workingBlocks.length - 1}
+                      />
+                    ))}
+                  </div>
+                </SortableContext>
 
                 <div className="fixed bottom-10 left-1/2 z-30 -translate-x-1/2 lg:relative lg:bottom-0 lg:left-auto lg:right-auto lg:flex lg:translate-x-0 lg:justify-center">
                   <BlockSelector onAddBlock={handleAddBlock} />
@@ -244,16 +247,45 @@ export const CmsEditorContentPage = () => {
             )}
           </div>
         ) : (
-          <div
-            className={`mx-auto overflow-hidden bg-white shadow-2xl ring-1 ring-border transition-all duration-300 ${canvasWidths[deviceMode]}`}
-          >
-            <div className="flex items-center justify-between border-b border-border bg-surface-container-lowest px-4 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-              <span>Viewport: {deviceMode}</span>
-              <span>Draft actual</span>
+          <div className="relative flex-1 flex flex-col items-center group/canvas">
+            <div
+              className="relative mx-auto h-full flex flex-col overflow-hidden bg-white shadow-2xl ring-1 ring-border transition-[width] duration-300 ease-out"
+              style={{ width: customWidth ? `${customWidth}px` : canvasWidths[deviceMode] }}
+            >
+              <div className="flex items-center justify-between border-b border-border bg-surface-container-lowest px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground shrink-0 select-none">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-2 w-2 rounded-full bg-success animate-pulse" />
+                  <span>Modo Preview: {customWidth ? `${Math.round(customWidth)}px` : deviceMode}</span>
+                </div>
+                <span>Draft Interactivo</span>
+              </div>
+              <div className="flex-1 overflow-y-auto custom-scrollbar overflow-x-hidden">
+                <div className="origin-top">
+                  <EditorCanvasRenderer blocks={workingBlocks} pageId={page.id} />
+                </div>
+              </div>
+
+              {/* Resize Handles */}
+              <div 
+                className="absolute inset-y-0 -right-1 w-2 cursor-ew-resize hover:bg-primary/20 transition-colors z-50 lg:block hidden"
+                onMouseDown={startResizing}
+              >
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-8 w-1 rounded-full bg-border group-hover/canvas:bg-primary/40 transition-colors" />
+              </div>
+              <div 
+                className="absolute inset-y-0 -left-1 w-2 cursor-ew-resize hover:bg-primary/20 transition-colors z-50 lg:block hidden"
+                onMouseDown={startResizing}
+              >
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-8 w-1 rounded-full bg-border group-hover/canvas:bg-primary/40 transition-colors" />
+              </div>
             </div>
-            <div className="origin-top pointer-events-none">
-              <CmsRenderer blocks={workingBlocks} pageId={page.id} />
-            </div>
+
+            {/* Resize Indicator overlay (only during custom resize) */}
+            {customWidth && (
+              <div className="absolute bottom-4 right-4 rounded-md bg-black/80 px-2 py-1 text-[10px] font-mono text-white backdrop-blur-sm pointer-events-none">
+                Width: {Math.round(customWidth)}px
+              </div>
+            )}
           </div>
         )}
       </div>

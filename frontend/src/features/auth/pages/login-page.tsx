@@ -4,7 +4,7 @@ import { LoginForm } from '@/features/auth/components/login-form'
 export const LoginPage = () => (
   <div className="space-y-8">
     <div className="space-y-2 text-center">
-      <p className="ui-kicker text-brand-muted">Escandallo</p>
+      <p className="ui-kicker text-brand-muted">Gestión</p>
       <h1 className="type-display-md text-brand-foreground">Acceso al backoffice</h1>
       <p className="type-body-sm text-brand-muted">Arquitectura modular con sesión stateful vía Sanctum.</p>
     </div>

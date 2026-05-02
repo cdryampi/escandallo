@@ -1,8 +1,10 @@
-import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
+import { Outlet, createRootRouteWithContext, createRoute } from '@tanstack/react-router'
 import type { QueryClient } from '@tanstack/react-query'
 import { buildAuthRoutes } from '@/routes/auth-routes'
 import { buildPublicRoutes } from '@/routes/public-routes'
 import { buildBackofficeRoutes } from '@/routes/backoffice-routes'
+import { PublicLayout } from '@/layouts/public-layout'
+import { PublicCmsPage } from '@/features/public-site/pages/public-cms-page'
 
 interface RouterContext {
   queryClient: QueryClient
@@ -44,8 +46,27 @@ const rootRoute = createRootRouteWithContext<RouterContext>()({
   notFoundComponent: NotFoundComponent,
 })
 
-const publicRoutes = buildPublicRoutes(rootRoute)
-const authRoutes = buildAuthRoutes(rootRoute)
 const backofficeRoutes = buildBackofficeRoutes(rootRoute)
+const authRoutes = buildAuthRoutes(rootRoute)
+const publicRoutes = buildPublicRoutes(rootRoute)
 
-export const routeTree = rootRoute.addChildren([publicRoutes, authRoutes, backofficeRoutes])
+// Explicit layout group for public catch-all CMS pages
+// This MUST be last to avoid intercepting more specific routes
+const cmsPublicSplatLayout = createRoute({
+  getParentRoute: () => rootRoute,
+  id: 'cms-public-splat-layout',
+  component: PublicLayout,
+})
+
+const cmsPublicSplatRoute = createRoute({
+  getParentRoute: () => cmsPublicSplatLayout,
+  path: '$',
+  component: PublicCmsPage,
+})
+
+export const routeTree = rootRoute.addChildren([
+  backofficeRoutes,
+  authRoutes,
+  publicRoutes,
+  cmsPublicSplatLayout.addChildren([cmsPublicSplatRoute]),
+])

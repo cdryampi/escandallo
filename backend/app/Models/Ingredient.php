@@ -27,12 +27,20 @@ class Ingredient extends Model
         'image_url',
     ];
 
-    protected $casts = [
-        'cost_per_unit' => 'decimal:4',
-        'waste_percentage' => 'decimal:2',
-        'yield_percentage' => 'decimal:2',
-        'is_active' => 'boolean',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'cost_per_unit' => 'decimal:4',
+            'waste_percentage' => 'decimal:2',
+            'yield_percentage' => 'decimal:2',
+            'is_active' => 'boolean',
+        ];
+    }
 
     public function unit(): BelongsTo
     {

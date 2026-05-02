@@ -60,7 +60,8 @@ export const MediaPicker = ({ onSelect, currentUrl }: Props) => {
 
         {/* Galería de imágenes */}
         {media?.map((item) => {
-          const isSelected = item.url === currentUrl
+          const normalize = (u: string) => (u.startsWith('/') ? u : `/${u}`)
+          const isSelected = currentUrl ? normalize(item.url) === normalize(currentUrl) : false
           const fullUrl = resolveMediaUrl(item.url)
           
           return (

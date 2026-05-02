@@ -53,21 +53,7 @@ class RecipeController extends Controller
      */
     public function updateImage(UpdateImageRequest $request, Recipe $recipe): JsonResponse
     {
-        $oldUrl = $recipe->image_url;
-        $newUrl = $this->imageService->store($request->file('image'), 'recipes');
-
-        try {
-            DB::transaction(function () use ($recipe, $newUrl) {
-                $recipe->update(['image_url' => $newUrl]);
-            });
-
-            if ($oldUrl) {
-                $this->imageService->delete($oldUrl);
-            }
-        } catch (\Exception $e) {
-            $this->imageService->delete($newUrl);
-            throw $e;
-        }
+        $newUrl = $this->imageService->updateModelImage($recipe, $request->file('image'), 'recipes');
 
         return response()->json([
             'message' => 'Recipe image updated successfully.',
@@ -84,14 +70,7 @@ class RecipeController extends Controller
     {
         Gate::authorize('deleteImage', $recipe);
 
-        $oldUrl = $recipe->image_url;
-        if ($oldUrl) {
-            DB::transaction(function () use ($recipe) {
-                $recipe->update(['image_url' => null]);
-            });
-
-            $this->imageService->delete($oldUrl);
-        }
+        $this->imageService->deleteModelImage($recipe);
 
         return response()->json([
             'message' => 'Recipe image deleted successfully.',

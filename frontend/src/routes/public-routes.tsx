@@ -2,7 +2,7 @@ import { createRoute } from '@tanstack/react-router'
 import type { AnyRoute } from '@tanstack/react-router'
 import { lazyNamedRouteComponent } from '@/routes/lazy-route'
 
-const PublicLayout = lazyNamedRouteComponent(
+export const PublicLayout = lazyNamedRouteComponent(
   () => import('@/layouts/public-layout'),
   'PublicLayout',
   {
@@ -20,7 +20,7 @@ const HomePage = lazyNamedRouteComponent(
   },
 )
 
-const PublicCmsPage = lazyNamedRouteComponent(
+export const PublicCmsPage = lazyNamedRouteComponent(
   () => import('@/features/public-site/pages/public-cms-page'),
   'PublicCmsPage',
   {
@@ -42,11 +42,5 @@ export const buildPublicRoutes = (rootRoute: AnyRoute) => {
     component: HomePage,
   })
 
-  const cmsPageRoute = createRoute({
-    getParentRoute: () => publicLayoutRoute,
-    path: '$',
-    component: PublicCmsPage,
-  })
-
-  return publicLayoutRoute.addChildren([homeRoute, cmsPageRoute])
+  return publicLayoutRoute.addChildren([homeRoute])
 }

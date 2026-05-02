@@ -50,23 +50,7 @@ class IngredientController extends Controller
      */
     public function updateImage(UpdateImageRequest $request, Ingredient $ingredient): JsonResponse
     {
-        $oldUrl = $ingredient->image_url;
-        $newUrl = $this->imageService->store($request->file('image'), 'ingredients');
-
-        try {
-            DB::transaction(function () use ($ingredient, $newUrl) {
-                $ingredient->update(['image_url' => $newUrl]);
-            });
-
-            // Cleanup old file only after DB success
-            if ($oldUrl) {
-                $this->imageService->delete($oldUrl);
-            }
-        } catch (\Exception $e) {
-            // Cleanup new file if DB failed
-            $this->imageService->delete($newUrl);
-            throw $e;
-        }
+        $newUrl = $this->imageService->updateModelImage($ingredient, $request->file('image'), 'ingredients');
 
         return response()->json([
             'message' => 'Ingredient image updated successfully.',
@@ -83,14 +67,7 @@ class IngredientController extends Controller
     {
         Gate::authorize('deleteImage', $ingredient);
 
-        $oldUrl = $ingredient->image_url;
-        if ($oldUrl) {
-            DB::transaction(function () use ($ingredient) {
-                $ingredient->update(['image_url' => null]);
-            });
-
-            $this->imageService->delete($oldUrl);
-        }
+        $this->imageService->deleteModelImage($ingredient);
 
         return response()->json([
             'message' => 'Ingredient image deleted successfully.',

@@ -36,8 +36,8 @@ export const PublicFooter = () => (
             <a href="tel:+34915200480" className="hover:text-white transition-colors">
               +34 915 200 480
             </a>
-            <a href="mailto:reservas@escandallo.es" className="hover:text-white transition-colors">
-              reservas@escandallo.es
+            <a href="mailto:reservas@restaurante.test" className="hover:text-white transition-colors">
+              reservas@restaurante.test
             </a>
           </div>
         </div>

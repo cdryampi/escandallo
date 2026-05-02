@@ -59,6 +59,57 @@ class ImageService
     }
 
     /**
+     * Update a model's image atomically.
+     *
+     * @param \Illuminate\Database\Eloquent\Model $model
+     * @param \Illuminate\Http\UploadedFile $file
+     * @param string $directory
+     * @param string $column
+     * @return string
+     * @throws \Exception
+     */
+    public function updateModelImage(\Illuminate\Database\Eloquent\Model $model, UploadedFile $file, string $directory, string $column = 'image_url'): string
+    {
+        $oldUrl = $model->{$column};
+        $newUrl = $this->store($file, $directory);
+
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($model, $newUrl, $column) {
+                $model->update([$column => $newUrl]);
+            });
+
+            if ($oldUrl) {
+                $this->delete($oldUrl);
+            }
+
+            return $newUrl;
+        } catch (\Exception $e) {
+            $this->delete($newUrl);
+            throw $e;
+        }
+    }
+
+    /**
+     * Delete a model's image atomically.
+     *
+     * @param \Illuminate\Database\Eloquent\Model $model
+     * @param string $column
+     * @return void
+     */
+    public function deleteModelImage(\Illuminate\Database\Eloquent\Model $model, string $column = 'image_url'): void
+    {
+        $url = $model->{$column};
+
+        if ($url) {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($model, $column) {
+                $model->update([$column => null]);
+            });
+
+            $this->delete($url);
+        }
+    }
+
+    /**
      * Generate a safe, unique filename.
      */
     protected function generateFilename(UploadedFile $file): string

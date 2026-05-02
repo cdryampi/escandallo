@@ -47,7 +47,6 @@ class DatabaseSeeder extends Seeder
             SupplierSeeder::class,
             IngredientSeeder::class,
             RecipeSeeder::class,
-            PageSeeder::class,
         ]);
     }
 

@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UploadCmsMediaRequest;
-use App\Models\Page;
 use App\Services\ImageService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Http\Request;
 
 class MediaController extends Controller
 {
@@ -16,9 +15,11 @@ class MediaController extends Controller
     /**
      * List all CMS media.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        Gate::authorize('viewAny', Page::class);
+        if (!$request->user()->is_admin) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
 
         $urls = $this->imageService->list('cms');
 
@@ -32,7 +33,9 @@ class MediaController extends Controller
      */
     public function upload(UploadCmsMediaRequest $request): JsonResponse
     {
-        Gate::authorize('uploadMedia', Page::class);
+        if (!$request->user()->is_admin) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
 
         $url = $this->imageService->store($request->file('file'), 'cms');
 

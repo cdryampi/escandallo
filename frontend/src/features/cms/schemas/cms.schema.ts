@@ -1,7 +1,5 @@
 import { z } from 'zod'
 
-const isRelativePath = (value: string) => value.startsWith('/') && !value.startsWith('//')
-
 const isAbsoluteUrl = (value: string) => {
   try {
     const protocol = new URL(value).protocol
@@ -17,7 +15,13 @@ const isPhoneLink = (value: string) => value.startsWith('tel:')
 const optionalMediaUrlSchema = z
   .string()
   .trim()
-  .refine((value) => value.length === 0 || isAbsoluteUrl(value) || isRelativePath(value), 'URL de imagen invalida')
+  .transform((val) => {
+    if (val.length === 0) return val
+    if (isAbsoluteUrl(val)) return val
+    // Ensure relative paths start with /
+    return val.startsWith('/') ? val : `/${val}`
+  })
+  .refine((value) => value.length === 0 || isAbsoluteUrl(value) || value.startsWith('/'), 'URL de imagen invalida')
   .optional()
   .nullable()
   .or(z.literal(''))
@@ -25,9 +29,15 @@ const optionalMediaUrlSchema = z
 const optionalLinkSchema = z
   .string()
   .trim()
+  .transform((val) => {
+    if (val.length === 0) return val
+    if (isAbsoluteUrl(val) || isEmailLink(val) || isPhoneLink(val)) return val
+    // Ensure relative paths start with /
+    return val.startsWith('/') ? val : `/${val}`
+  })
   .refine(
     (value) =>
-      value.length === 0 || isAbsoluteUrl(value) || isRelativePath(value) || isEmailLink(value) || isPhoneLink(value),
+      value.length === 0 || isAbsoluteUrl(value) || value.startsWith('/') || isEmailLink(value) || isPhoneLink(value),
     'Enlace invalido',
   )
   .optional()

@@ -4,16 +4,14 @@ import {
   Search,
   Settings,
   History,
-  ChevronRight,
-  Eye,
-  Type,
-  List as ListIcon,
-  Phone,
-  Star,
 } from 'lucide-react'
 import { useAdminPageDraft } from '@/api/cms'
 import { useCmsEditorStore } from '../stores/cms-editor-store'
-import type { Block } from '@/types/cms'
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import { SortableTreeItem } from './SortableTreeItem'
 
 export const CmsEditorSidebar = () => {
   const { pageId } = useParams({ from: '/backoffice/cms/pages/$pageId' })
@@ -21,28 +19,6 @@ export const CmsEditorSidebar = () => {
   const { data: draft } = useAdminPageDraft(parsedPageId)
   
   const { selectedBlockId, setSelectedBlockId, workingBlocks } = useCmsEditorStore()
-
-  const getBlockIcon = (type: string) => {
-    switch (type) {
-      case 'HeroBlock': return <Eye className="size-3.5" />
-      case 'RichTextBlock': return <Type className="size-3.5" />
-      case 'FeatureListBlock': return <ListIcon className="size-3.5" />
-      case 'ContactFormBlock': return <Phone className="size-3.5" />
-      case 'MenuHighlightsBlock': return <Star className="size-3.5" />
-      default: return <Layout className="size-3.5" />
-    }
-  }
-
-  const getBlockLabel = (block: Block) => {
-    switch (block.type) {
-      case 'HeroBlock': return block.data.title || 'Sección Hero'
-      case 'RichTextBlock': return 'Contenido de Texto'
-      case 'FeatureListBlock': return block.data.title || 'Lista de Características'
-      case 'MenuHighlightsBlock': return block.data.title || 'Platos Destacados'
-      case 'ContactFormBlock': return 'Formulario de Contacto'
-      default: return (block as Block).type
-    }
-  }
 
   const blocksToDisplay = workingBlocks.length > 0 ? workingBlocks : (draft?.blocks ?? [])
 
@@ -86,35 +62,33 @@ export const CmsEditorSidebar = () => {
 
       {/* Árbol de Bloques */}
       <div className="flex flex-col flex-1 min-h-0 rounded-xl border border-border bg-white shadow-sm overflow-hidden">
-        <div className="p-3 border-b border-border bg-surface-container-lowest">
-          <h3 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+        <div className="p-3 border-b border-border bg-surface-container-lowest shrink-0">
+          <h3 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground truncate">
             Estructura de la Página
           </h3>
         </div>
         
-        <div className="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar min-w-0">
           {blocksToDisplay.length === 0 ? (
             <p className="p-4 text-center text-xs text-muted-foreground italic">
               No hay bloques añadidos.
             </p>
           ) : (
-            blocksToDisplay.map((block) => (
-              <button
-                key={block.id}
-                onClick={() => setSelectedBlockId(block.id)}
-                className={`w-full flex items-center gap-2 rounded-md px-3 py-2 text-xs transition-all text-left ${
-                  selectedBlockId === block.id
-                    ? 'bg-primary/10 text-primary font-bold shadow-sm'
-                    : 'text-on-surface-variant hover:bg-surface-container-low'
-                }`}
-              >
-                <div className="flex h-5 w-5 items-center justify-center rounded bg-surface-container text-muted-foreground shrink-0">
-                  {getBlockIcon(block.type)}
-                </div>
-                <span className="truncate flex-1">{getBlockLabel(block)}</span>
-                {selectedBlockId === block.id && <ChevronRight className="size-3" />}
-              </button>
-            ))
+            <SortableContext
+              items={blocksToDisplay.map((b) => b.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="space-y-1 min-w-0">
+                {blocksToDisplay.map((block) => (
+                  <SortableTreeItem
+                    key={block.id}
+                    block={block}
+                    isSelected={selectedBlockId === block.id}
+                    onClick={() => setSelectedBlockId(block.id)}
+                  />
+                ))}
+              </div>
+            </SortableContext>
           )}
         </div>
       </div>

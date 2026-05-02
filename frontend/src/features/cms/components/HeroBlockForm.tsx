@@ -23,7 +23,7 @@ export const HeroBlockForm = ({ defaultValues, onSubmit, onCancel }: Props) => {
         <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60 border-b border-border/50 pb-4">Contenido Principal</h4>
         <div className="space-y-4">
           <label className="ui-field-label text-xs uppercase tracking-widest text-muted-foreground/80">Título</label>
-          <Input {...form.register('title')} placeholder="Ej: Bienvenidos a Escandallo" className="type-headline-sm h-12 bg-white" />
+          <Input {...form.register('title')} placeholder="Ej: Bienvenidos a nuestro restaurante" className="type-headline-sm h-12 bg-white" />
           {form.formState.errors.title && <p className="ui-field-error mt-2">{form.formState.errors.title.message}</p>}
         </div>
         
