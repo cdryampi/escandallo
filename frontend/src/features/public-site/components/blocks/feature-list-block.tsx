@@ -1,5 +1,5 @@
-import type { FeatureListBlockData } from '@/types/cms'
 import {
+  ArrowRight,
   Clock,
   Coffee,
   Heart,
@@ -10,6 +10,7 @@ import {
   Zap,
   type LucideIcon,
 } from 'lucide-react'
+import type { FeatureListBlockData } from '@/types/cms'
 
 interface Props {
   data: FeatureListBlockData
@@ -31,37 +32,60 @@ export const FeatureListBlock = ({ data }: Props) => {
     return null
   }
 
-  return (
-    <section className="relative overflow-hidden bg-brand-strong py-24 text-white">
-      <div className="absolute top-0 right-0 -mt-32 -mr-32 h-64 w-64 rounded-full bg-primary/20 blur-3xl" />
-      <div className="absolute bottom-0 left-0 -mb-32 -ml-32 h-64 w-64 rounded-full bg-accent/10 blur-3xl" />
+  const [leadFeature, ...otherFeatures] = data.features
+  const LeadIcon = FEATURE_ICONS[leadFeature?.icon || 'Star'] || Star
 
-      <div className="relative z-10 container mx-auto max-w-7xl px-4">
-        {data.title ? (
-          <div className="mb-20 text-center">
-            <h2 className="text-3xl font-bold font-display md:text-4xl">{data.title}</h2>
-            <div className="mx-auto mt-6 h-1 w-20 rounded-full bg-brand-muted" />
+  return (
+    <section className="public-section bg-surface">
+      <div className="public-container relative space-y-14">
+        <div className="public-heading">
+          <p className="ui-kicker">Metodo y capacidades</p>
+          {data.title ? <h2 className="mt-6 type-display-md text-brand-strong dark:text-foreground">{data.title}</h2> : null}
+          <div className="public-divider" />
+          <p className="public-intro type-body-lg">
+            Capacidades presentadas con aire y orden. Menos gesto de sistema. Mas claridad de metodo.
+          </p>
+        </div>
+
+        {leadFeature ? (
+          <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+            <article className="public-surface-card relative overflow-hidden p-8 md:p-10">
+              <div className="flex size-16 items-center justify-center rounded-full border border-brand/10 bg-brand/[0.05] text-brand">
+                <LeadIcon className="size-7" />
+              </div>
+              <p className="mt-10 type-label-md text-[10px] text-brand/44">Pieza central</p>
+              <h3 className="mt-4 max-w-lg font-heading text-5xl leading-[0.98] tracking-[-0.04em] text-brand-strong dark:text-foreground">
+                {leadFeature.title}
+              </h3>
+              <p className="mt-6 max-w-xl type-body-lg text-muted-foreground">{leadFeature.description}</p>
+              <div className="mt-10 flex items-center gap-3 text-[11px] uppercase tracking-[0.18em] text-brand/52">
+                <span>Lectura principal</span>
+                <ArrowRight className="size-4" />
+              </div>
+            </article>
+
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-1">
+              {otherFeatures.map((feature, index) => {
+                const Icon = FEATURE_ICONS[feature.icon || 'Star'] || Star
+                return (
+                  <article
+                    key={`${feature.title}-${index}`}
+                    className="public-surface-card group flex gap-5 p-6 transition-all duration-300 hover:-translate-y-0.5"
+                  >
+                    <div className="flex size-12 shrink-0 items-center justify-center rounded-full border border-brand/10 bg-brand/[0.05] text-brand">
+                      <Icon className="size-5" />
+                    </div>
+                    <div>
+                      <p className="type-label-md text-[10px] text-brand/36">Pieza {(index + 2).toString().padStart(2, '0')}</p>
+                      <h3 className="mt-3 type-headline-sm text-brand-strong dark:text-foreground">{feature.title}</h3>
+                      <p className="mt-3 type-body-sm text-muted-foreground">{feature.description}</p>
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
           </div>
         ) : null}
-
-        <div className="grid gap-12 md:grid-cols-3">
-          {data.features.map((feature, index) => {
-            const Icon = FEATURE_ICONS[feature.icon || 'Star'] || Star
-
-            return (
-              <div
-                key={`${feature.title}-${index}`}
-                className="group flex flex-col items-center text-center transition-transform duration-300 hover:-translate-y-2"
-              >
-                <div className="mb-6 rounded-2xl bg-white/10 p-5 shadow-inner ring-1 ring-white/20 transition-colors group-hover:bg-white/20">
-                  <Icon className="h-10 w-10 text-brand-muted" />
-                </div>
-                <h3 className="mb-4 text-2xl font-bold font-display">{feature.title}</h3>
-                <p className="max-w-xs leading-relaxed text-brand-muted/80 font-body">{feature.description}</p>
-              </div>
-            )
-          })}
-        </div>
       </div>
     </section>
   )

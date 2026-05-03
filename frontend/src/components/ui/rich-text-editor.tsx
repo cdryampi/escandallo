@@ -6,6 +6,7 @@ import Placeholder from '@tiptap/extension-placeholder'
 import Image from '@tiptap/extension-image'
 import Underline from '@tiptap/extension-underline'
 import { Button } from './button'
+import { cn } from '@/lib/utils'
 import {
   Bold,
   Italic,
@@ -60,7 +61,7 @@ export const RichTextEditor = ({ content, onChange, placeholder = 'Escribe algo 
     editorProps: {
       attributes: {
         class:
-          'min-h-[150px] w-full rounded-md border border-input bg-white px-4 py-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 prose prose-sm max-w-none',
+          'min-h-[180px] w-full rounded-md border border-border/60 bg-white px-5 py-4 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand/30 focus-visible:border-brand/40 disabled:cursor-not-allowed disabled:opacity-50 prose prose-sm max-w-none transition-all shadow-sm',
       },
     },
   })
@@ -82,165 +83,167 @@ export const RichTextEditor = ({ content, onChange, placeholder = 'Escribe algo 
     editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
   }
 
+  const getButtonVariant = (active: boolean) => active ? 'default' : 'ghost'
+
   return (
-    <div className="space-y-2">
-      <div className="flex flex-wrap gap-1 rounded-md border border-input bg-surface-container-low p-1 shadow-sm">
+    <div className="space-y-3 group/editor">
+      <div className="flex flex-wrap items-center gap-1 rounded-md border border-border/50 bg-surface-container-lowest p-1 shadow-sm transition-colors group-focus-within/editor:border-brand/30">
         {/* Estilos básicos */}
-        <div className="flex gap-0.5 mr-1 pr-1 border-r border-border">
+        <div className="flex gap-0.5 mr-1 pr-1 border-r border-border/40">
           <Button
             type="button"
-            variant={editor.isActive('bold') ? 'secondary' : 'ghost'}
+            variant={getButtonVariant(editor.isActive('bold'))}
             size="icon"
-            className="h-8 w-8"
+            className={cn("h-8 w-8", editor.isActive('bold') && "bg-brand text-white hover:bg-brand-strong")}
             onClick={() => editor.chain().focus().toggleBold().run()}
           >
-            <Bold className="h-4 w-4" />
+            <Bold className={cn("h-4 w-4", editor.isActive('bold') ? "text-white" : "text-on-surface-variant")} />
           </Button>
           <Button
             type="button"
-            variant={editor.isActive('italic') ? 'secondary' : 'ghost'}
+            variant={getButtonVariant(editor.isActive('italic'))}
             size="icon"
-            className="h-8 w-8"
+            className={cn("h-8 w-8", editor.isActive('italic') && "bg-brand text-white hover:bg-brand-strong")}
             onClick={() => editor.chain().focus().toggleItalic().run()}
           >
-            <Italic className="h-4 w-4" />
+            <Italic className={cn("h-4 w-4", editor.isActive('italic') ? "text-white" : "text-on-surface-variant")} />
           </Button>
           <Button
             type="button"
-            variant={editor.isActive('underline') ? 'secondary' : 'ghost'}
+            variant={getButtonVariant(editor.isActive('underline'))}
             size="icon"
-            className="h-8 w-8"
+            className={cn("h-8 w-8", editor.isActive('underline') && "bg-brand text-white hover:bg-brand-strong")}
             onClick={() => editor.chain().focus().toggleUnderline().run()}
           >
-            <UnderlineIcon className="h-4 w-4" />
+            <UnderlineIcon className={cn("h-4 w-4", editor.isActive('underline') ? "text-white" : "text-on-surface-variant")} />
           </Button>
         </div>
 
         {/* Encabezados */}
-        <div className="flex gap-0.5 mr-1 pr-1 border-r border-border">
+        <div className="flex gap-0.5 mr-1 pr-1 border-r border-border/40">
           <Button
             type="button"
-            variant={editor.isActive('heading', { level: 1 }) ? 'secondary' : 'ghost'}
+            variant={getButtonVariant(editor.isActive('heading', { level: 1 }))}
             size="icon"
-            className="h-8 w-8"
+            className={cn("h-8 w-8", editor.isActive('heading', { level: 1 }) && "bg-brand text-white hover:bg-brand-strong")}
             onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
           >
-            <Heading1 className="h-4 w-4" />
+            <Heading1 className={cn("h-4 w-4", editor.isActive('heading', { level: 1 }) ? "text-white" : "text-on-surface-variant")} />
           </Button>
           <Button
             type="button"
-            variant={editor.isActive('heading', { level: 2 }) ? 'secondary' : 'ghost'}
+            variant={getButtonVariant(editor.isActive('heading', { level: 2 }))}
             size="icon"
-            className="h-8 w-8"
+            className={cn("h-8 w-8", editor.isActive('heading', { level: 2 }) && "bg-brand text-white hover:bg-brand-strong")}
             onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
           >
-            <Heading2 className="h-4 w-4" />
+            <Heading2 className={cn("h-4 w-4", editor.isActive('heading', { level: 2 }) ? "text-white" : "text-on-surface-variant")} />
           </Button>
           <Button
             type="button"
-            variant={editor.isActive('heading', { level: 3 }) ? 'secondary' : 'ghost'}
+            variant={getButtonVariant(editor.isActive('heading', { level: 3 }))}
             size="icon"
-            className="h-8 w-8"
+            className={cn("h-8 w-8", editor.isActive('heading', { level: 3 }) && "bg-brand text-white hover:bg-brand-strong")}
             onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
           >
-            <Heading3 className="h-4 w-4" />
+            <Heading3 className={cn("h-4 w-4", editor.isActive('heading', { level: 3 }) ? "text-white" : "text-on-surface-variant")} />
           </Button>
         </div>
 
         {/* Alineación */}
-        <div className="flex gap-0.5 mr-1 pr-1 border-r border-border">
+        <div className="flex gap-0.5 mr-1 pr-1 border-r border-border/40">
           <Button
             type="button"
-            variant={editor.isActive({ textAlign: 'left' }) ? 'secondary' : 'ghost'}
+            variant={getButtonVariant(editor.isActive({ textAlign: 'left' }))}
             size="icon"
-            className="h-8 w-8"
+            className={cn("h-8 w-8", editor.isActive({ textAlign: 'left' }) && "bg-brand text-white hover:bg-brand-strong")}
             onClick={() => editor.chain().focus().setTextAlign('left').run()}
           >
-            <AlignLeft className="h-4 w-4" />
+            <AlignLeft className={cn("h-4 w-4", editor.isActive({ textAlign: 'left' }) ? "text-white" : "text-on-surface-variant")} />
           </Button>
           <Button
             type="button"
-            variant={editor.isActive({ textAlign: 'center' }) ? 'secondary' : 'ghost'}
+            variant={getButtonVariant(editor.isActive({ textAlign: 'center' }))}
             size="icon"
-            className="h-8 w-8"
+            className={cn("h-8 w-8", editor.isActive({ textAlign: 'center' }) && "bg-brand text-white hover:bg-brand-strong")}
             onClick={() => editor.chain().focus().setTextAlign('center').run()}
           >
-            <AlignCenter className="h-4 w-4" />
+            <AlignCenter className={cn("h-4 w-4", editor.isActive({ textAlign: 'center' }) ? "text-white" : "text-on-surface-variant")} />
           </Button>
           <Button
             type="button"
-            variant={editor.isActive({ textAlign: 'right' }) ? 'secondary' : 'ghost'}
+            variant={getButtonVariant(editor.isActive({ textAlign: 'right' }))}
             size="icon"
-            className="h-8 w-8"
+            className={cn("h-8 w-8", editor.isActive({ textAlign: 'right' }) && "bg-brand text-white hover:bg-brand-strong")}
             onClick={() => editor.chain().focus().setTextAlign('right').run()}
           >
-            <AlignRight className="h-4 w-4" />
+            <AlignRight className={cn("h-4 w-4", editor.isActive({ textAlign: 'right' }) ? "text-white" : "text-on-surface-variant")} />
           </Button>
         </div>
 
         {/* Listas y otros */}
-        <div className="flex gap-0.5 mr-1 pr-1 border-r border-border">
+        <div className="flex gap-0.5 mr-1 pr-1 border-r border-border/40">
           <Button
             type="button"
-            variant={editor.isActive('bulletList') ? 'secondary' : 'ghost'}
+            variant={getButtonVariant(editor.isActive('bulletList'))}
             size="icon"
-            className="h-8 w-8"
+            className={cn("h-8 w-8", editor.isActive('bulletList') && "bg-brand text-white hover:bg-brand-strong")}
             onClick={() => editor.chain().focus().toggleBulletList().run()}
           >
-            <List className="h-4 w-4" />
+            <List className={cn("h-4 w-4", editor.isActive('bulletList') ? "text-white" : "text-on-surface-variant")} />
           </Button>
           <Button
             type="button"
-            variant={editor.isActive('orderedList') ? 'secondary' : 'ghost'}
+            variant={getButtonVariant(editor.isActive('orderedList'))}
             size="icon"
-            className="h-8 w-8"
+            className={cn("h-8 w-8", editor.isActive('orderedList') && "bg-brand text-white hover:bg-brand-strong")}
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
           >
-            <ListOrdered className="h-4 w-4" />
+            <ListOrdered className={cn("h-4 w-4", editor.isActive('orderedList') ? "text-white" : "text-on-surface-variant")} />
           </Button>
         </div>
 
         <div className="flex gap-0.5">
           <Button
             type="button"
-            variant={editor.isActive('link') ? 'secondary' : 'ghost'}
+            variant={getButtonVariant(editor.isActive('link'))}
             size="icon"
-            className="h-8 w-8"
+            className={cn("h-8 w-8", editor.isActive('link') && "bg-brand text-white hover:bg-brand-strong")}
             onClick={setLink}
           >
-            <LinkIcon className="h-4 w-4" />
+            <LinkIcon className={cn("h-4 w-4", editor.isActive('link') ? "text-white" : "text-on-surface-variant")} />
           </Button>
           <Button
             type="button"
-            variant={editor.isActive('blockquote') ? 'secondary' : 'ghost'}
+            variant={getButtonVariant(editor.isActive('blockquote'))}
             size="icon"
-            className="h-8 w-8"
+            className={cn("h-8 w-8", editor.isActive('blockquote') && "bg-brand text-white hover:bg-brand-strong")}
             onClick={() => editor.chain().focus().toggleBlockquote().run()}
           >
-            <Quote className="h-4 w-4" />
+            <Quote className={cn("h-4 w-4", editor.isActive('blockquote') ? "text-white" : "text-on-surface-variant")} />
           </Button>
         </div>
 
         <div className="flex-1" />
         
-        <div className="flex gap-0.5 border-l border-border pl-1">
+        <div className="flex gap-0.5 border-l border-border/40 pl-1">
           <Button
             type="button"
             variant="ghost"
             size="icon"
-            className="h-8 w-8"
+            className="h-8 w-8 text-muted-foreground/60 hover:text-foreground"
             onClick={() => editor.chain().focus().undo().run()}
           >
-            <Undo className="h-4 w-4" />
+            <Undo className="h-4 w-4 text-on-surface-variant" />
           </Button>
           <Button
             type="button"
             variant="ghost"
             size="icon"
-            className="h-8 w-8"
+            className="h-8 w-8 text-muted-foreground/60 hover:text-foreground"
             onClick={() => editor.chain().focus().redo().run()}
           >
-            <Redo className="h-4 w-4" />
+            <Redo className="h-4 w-4 text-on-surface-variant" />
           </Button>
         </div>
       </div>

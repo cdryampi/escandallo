@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateLandingModuleRequest;
 use App\Http\Requests\UpdateLandingVersionRequest;
 use App\Services\LandingService;
 use Illuminate\Http\JsonResponse;
@@ -97,11 +98,11 @@ class LandingController extends Controller
     /**
      * Update a specific module.
      */
-    public function update(Request $request, string $module): JsonResponse
+    public function update(UpdateLandingModuleRequest $request, string $module): JsonResponse
     {
         Gate::authorize('update', \App\Models\LandingSetting::class);
 
-        $data = $this->landingService->updateModule($module, $request->all());
+        $data = $this->landingService->updateModule($module, $request->validated());
 
         return response()->json([
             'data' => $data

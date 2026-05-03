@@ -1,7 +1,14 @@
+export interface LandingPaletteConfig {
+  brand: string;
+  brand_strong: string;
+  accent: string;
+}
+
 export interface BrandingConfig {
   name: string;
   tagline?: string;
   logo_url?: string;
+  palette?: LandingPaletteConfig;
 }
 
 export interface TopBarConfig {

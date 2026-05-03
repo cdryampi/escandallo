@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect } from 'react'
 import { Clock, Coffee, Heart, MapPin, Plus, Shield, Star, Trash2, Utensils, Zap } from 'lucide-react'
 import { useFieldArray, useForm, useWatch } from 'react-hook-form'
 import { FeatureListBlockSchema, type FeatureListBlockData } from '../schemas/cms.schema'
@@ -8,6 +9,7 @@ import { FeatureListBlockSchema, type FeatureListBlockData } from '../schemas/cm
 interface Props {
   defaultValues: FeatureListBlockData
   onSubmit: (values: FeatureListBlockData) => void
+  onChange: (values: FeatureListBlockData) => void
   onCancel: () => void
 }
 
@@ -22,11 +24,19 @@ const AVAILABLE_ICONS = [
   { name: 'Coffee', icon: Coffee },
 ]
 
-export const FeatureListBlockForm = ({ defaultValues, onSubmit, onCancel }: Props) => {
+export const FeatureListBlockForm = ({ defaultValues, onSubmit, onChange, onCancel }: Props) => {
   const form = useForm<FeatureListBlockData>({
     resolver: zodResolver(FeatureListBlockSchema),
     defaultValues,
   })
+
+  useEffect(() => {
+    const subscription = form.watch((values) => {
+      onChange(values as FeatureListBlockData)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [form, onChange])
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -134,7 +144,7 @@ export const FeatureListBlockForm = ({ defaultValues, onSubmit, onCancel }: Prop
           Cancelar
         </Button>
         <Button type="submit" className="px-10 h-11 text-sm font-bold shadow-primary/20 shadow-lg">
-          Actualizar bloque
+          Guardar bloque
         </Button>
       </div>
     </form>

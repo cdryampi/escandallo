@@ -1,80 +1,77 @@
 import { Link } from '@tanstack/react-router'
 import { appConfig } from '@/app/config'
+import type { BrandingConfig, FooterConfig } from '@/features/public-site/types/landing.types'
 
-export const PublicFooter = () => (
-  <footer className="border-t border-border bg-brand-strong text-white">
-    <div className="mx-auto max-w-7xl px-6 py-16">
-      <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
-        {/* Marca */}
-        <div className="space-y-4">
-          <Link to="/" className="flex flex-col" aria-label="Ir al inicio">
-            <span className="ui-kicker text-brand-muted text-[10px] leading-tight tracking-widest">
-              Restaurante
-            </span>
-            <span className="type-headline-sm tracking-tight text-white">{appConfig.appName}</span>
-          </Link>
-          <p className="type-body-sm text-brand-muted max-w-xs leading-relaxed">
-            Cocina de temporada y producto cuidado en el centro de Madrid.
-            Una mesa que merece la pena reservar.
+interface Props {
+  branding?: BrandingConfig
+  footer?: FooterConfig
+}
+
+export const PublicFooter = ({ branding, footer }: Props) => {
+  const brandName = branding?.name?.trim() || appConfig.appName
+  const currentYear = new Date().getFullYear()
+
+  return (
+    <footer className="relative overflow-hidden border-t border-border/70 bg-surface pt-20 pb-10 text-foreground">
+      <div className="public-container relative space-y-16">
+        <div className="grid gap-12 lg:grid-cols-[1.25fr_0.7fr_0.7fr_1fr] lg:items-start">
+          <div className="max-w-md space-y-6">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.22em] text-foreground/36">Escandallo</p>
+              <h2 className="mt-3 font-heading text-4xl font-normal tracking-[-0.03em] text-brand-strong dark:text-foreground">
+                {brandName}
+              </h2>
+            </div>
+            <p className="type-body-lg max-w-sm text-muted-foreground">
+              {branding?.tagline || 'Direccion culinaria serena, control claro y una presencia visual sin ruido.'}
+            </p>
+            <Link to="/contacto" className="public-solid-button w-fit px-6">
+              Reservar
+            </Link>
+          </div>
+
+          <div className="space-y-5">
+            <h4 className="type-label-md text-[11px] tracking-[0.14em] text-foreground/42">Explorar</h4>
+            <nav className="flex flex-col gap-4 text-sm text-muted-foreground">
+              <Link to="/" className="transition-colors hover:text-brand-strong dark:hover:text-foreground">Inicio</Link>
+              <Link to="/contacto" className="transition-colors hover:text-brand-strong dark:hover:text-foreground">Reservas</Link>
+              <Link to="/backoffice" className="transition-colors hover:text-brand-strong dark:hover:text-foreground">Acceso personal</Link>
+            </nav>
+          </div>
+
+          <div className="space-y-5">
+            <h4 className="type-label-md text-[11px] tracking-[0.14em] text-foreground/42">Marco</h4>
+            <nav className="flex flex-col gap-4 text-sm text-muted-foreground">
+              <Link to="/legal" className="transition-colors hover:text-brand-strong dark:hover:text-foreground">Aviso Legal</Link>
+              <Link to="/privacidad" className="transition-colors hover:text-brand-strong dark:hover:text-foreground">Privacidad</Link>
+              <Link to="/cookies" className="transition-colors hover:text-brand-strong dark:hover:text-foreground">Cookies</Link>
+            </nav>
+          </div>
+
+          <div className="public-surface-card p-7">
+            <p className="type-label-md text-[11px] tracking-[0.14em] text-foreground/42">Ubicacion y contacto</p>
+            <div className="mt-6 space-y-4 text-sm text-muted-foreground">
+              <p>{footer?.address || 'Calle Arenal, 14 - Madrid'}</p>
+              <p>{footer?.phone || '+34 915 200 480'}</p>
+              <p>{footer?.email || 'reservas@restaurante.test'}</p>
+            </div>
+            <div className="mt-8 public-stat-rule" />
+            <p className="mt-5 text-[11px] uppercase tracking-[0.18em] text-foreground/34">
+              Servicio con calma
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-5 border-t border-border/70 pt-8 md:flex-row md:items-center md:justify-between">
+          <p className="text-[11px] uppercase tracking-[0.16em] text-foreground/42">
+            &copy; {currentYear} {brandName}. Precision tranquila.
           </p>
-        </div>
-
-        {/* Navegación */}
-        <div className="space-y-4">
-          <h4 className="type-label-md text-white">La carta y el local</h4>
-          <nav className="flex flex-col gap-2 type-body-sm text-brand-muted" aria-label="Navegación secundaria">
-            <Link to="/" className="hover:text-white transition-colors">Inicio</Link>
-            <Link to="/carta" className="hover:text-white transition-colors">La Carta</Link>
-            <Link to="/contacto" className="hover:text-white transition-colors">Reservas</Link>
-          </nav>
-        </div>
-
-        {/* Contacto */}
-        <div className="space-y-4">
-          <h4 className="type-label-md text-white">Contacto</h4>
-          <div className="flex flex-col gap-2 type-body-sm text-brand-muted">
-            <a href="tel:+34915200480" className="hover:text-white transition-colors">
-              +34 915 200 480
-            </a>
-            <a href="mailto:reservas@restaurante.test" className="hover:text-white transition-colors">
-              reservas@restaurante.test
-            </a>
-          </div>
-        </div>
-
-        {/* Ubicación y horario */}
-        <div className="space-y-4">
-          <h4 className="type-label-md text-white">Dónde estamos</h4>
-          <div className="type-body-sm text-brand-muted space-y-2">
-            <p>
-              Calle Arenal, 14<br />
-              28013 Madrid
-            </p>
-            <p className="text-brand-muted/70 text-[12px]">
-              Mar–Sáb: 13:30–16:00 / 20:30–23:30<br />
-              Dom: 13:30–16:30 · Lun: cerrado
-            </p>
+          <div className="flex items-center gap-6 text-[10px] uppercase tracking-[0.18em] text-foreground/28">
+            <span>Hecho con rigor</span>
+            <span>Paleta viva</span>
           </div>
         </div>
       </div>
-
-      {/* Barra inferior */}
-      <div className="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-        <p className="type-body-sm text-brand-muted/60">
-          © {new Date().getFullYear()} {appConfig.appName}. Todos los derechos reservados.
-        </p>
-        <nav className="flex items-center gap-6 type-body-sm text-brand-muted/50" aria-label="Navegación legal">
-          <Link to="/legal" className="hover:text-brand-muted transition-colors">Aviso Legal</Link>
-          <Link to="/privacidad" className="hover:text-brand-muted transition-colors">Privacidad</Link>
-          <Link
-            to="/login"
-            className="hover:text-brand-muted/80 transition-colors"
-            aria-label="Acceso al área de gestión interna"
-          >
-            Acceso staff
-          </Link>
-        </nav>
-      </div>
-    </div>
-  </footer>
-)
+    </footer>
+  )
+}

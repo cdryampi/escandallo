@@ -45,6 +45,7 @@ export const CmsEditorContentPage = () => {
     setSelectedBlockId,
     workingBlocks,
     setWorkingBlocks,
+    removeWorkingBlock,
     viewMode,
     setViewMode,
     deviceMode,
@@ -59,12 +60,12 @@ export const CmsEditorContentPage = () => {
 
     setWorkingBlocks(draft.blocks)
 
-    const nextSelectedBlockId = draft.blocks.some((block) => block.id === selectedBlockId)
-      ? selectedBlockId
-      : (draft.blocks[0]?.id ?? null)
-
+    const currentSelectedBlockId = useCmsEditorStore.getState().selectedBlockId
+    const nextSelectedBlockId = draft.blocks.some((block) => block.id === currentSelectedBlockId)
+      ? currentSelectedBlockId
+      : draft.blocks[0]?.id ?? null
     setSelectedBlockId(nextSelectedBlockId)
-  }, [draft, selectedBlockId, setSelectedBlockId, setWorkingBlocks])
+  }, [draft, setSelectedBlockId, setWorkingBlocks])
 
   if (isPageLoading || isDraftLoading) {
     return (
@@ -103,9 +104,10 @@ export const CmsEditorContentPage = () => {
   const handleDeleteBlock = (id: string) => {
     if (!window.confirm('Eliminar este bloque?')) return
 
-    const nextBlocks = workingBlocks.filter((block) => block.id !== id)
-    setWorkingBlocks(nextBlocks)
-    setSelectedBlockId(nextBlocks[0]?.id ?? null)
+    removeWorkingBlock(id)
+    toast.success('Bloque eliminado del borrador', {
+      description: 'Guarda la pagina o publica para persistir este cambio.',
+    })
   }
 
   const handleMove = (index: number, direction: 'up' | 'down') => {
@@ -198,7 +200,7 @@ export const CmsEditorContentPage = () => {
           className="h-9 gap-2 shadow-md"
         >
           <Save className="size-4" />
-          {updateVersion.isPending ? 'Guardando...' : 'Guardar cambios'}
+          {updateVersion.isPending ? 'Guardando...' : 'Guardar página'}
         </Button>
       </div>
 
@@ -247,43 +249,60 @@ export const CmsEditorContentPage = () => {
             )}
           </div>
         ) : (
-          <div className="relative flex-1 flex flex-col items-center group/canvas">
+          <div className="relative flex-1 flex flex-col items-center group/canvas overflow-hidden bg-surface-container/30">
+            {/* Subtle Workspace Background - Grid/Dots */}
+            <div className="absolute inset-0 pointer-events-none opacity-[0.03]" 
+                 style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '24px 24px' }} 
+            />
+
             <div
-              className="relative mx-auto h-full flex flex-col overflow-hidden bg-white shadow-2xl ring-1 ring-border transition-[width] duration-300 ease-out"
+              className="relative mx-auto h-full flex flex-col overflow-hidden bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] ring-1 ring-border/50 transition-[width] duration-300 ease-out my-8 rounded-sm"
               style={{ width: customWidth ? `${customWidth}px` : canvasWidths[deviceMode] }}
             >
-              <div className="flex items-center justify-between border-b border-border bg-surface-container-lowest px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground shrink-0 select-none">
-                <div className="flex items-center gap-2">
-                  <span className="flex h-2 w-2 rounded-full bg-success animate-pulse" />
-                  <span>Modo Preview: {customWidth ? `${Math.round(customWidth)}px` : deviceMode}</span>
+              <div className="flex items-center justify-between border-b border-border bg-surface-container-lowest px-4 py-2 text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60 shrink-0 select-none">
+                <div className="flex items-center gap-3">
+                  <div className="flex gap-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-border" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-border" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-border" />
+                  </div>
+                  <div className="h-3 w-px bg-border/50" />
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
+                    <span>Viewport: {customWidth ? `${Math.round(customWidth)}px` : deviceMode}</span>
+                  </div>
                 </div>
-                <span>Draft Interactivo</span>
+                <div className="flex items-center gap-2">
+                  <span className="px-1.5 py-0.5 rounded-sm bg-surface-container text-[8px] border border-border/40">Canvas v2.0</span>
+                </div>
               </div>
-              <div className="flex-1 overflow-y-auto custom-scrollbar overflow-x-hidden">
+              <div className="flex-1 overflow-y-auto custom-scrollbar overflow-x-hidden bg-background">
                 <div className="origin-top">
                   <EditorCanvasRenderer blocks={workingBlocks} pageId={page.id} />
                 </div>
               </div>
 
-              {/* Resize Handles */}
+              {/* Resize Handles - Improved Visuals */}
               <div 
-                className="absolute inset-y-0 -right-1 w-2 cursor-ew-resize hover:bg-primary/20 transition-colors z-50 lg:block hidden"
+                className="absolute inset-y-0 -right-1.5 w-3 cursor-ew-resize group/handle z-50 lg:block hidden"
                 onMouseDown={startResizing}
               >
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-8 w-1 rounded-full bg-border group-hover/canvas:bg-primary/40 transition-colors" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-12 w-1 rounded-full bg-border/40 group-hover/handle:bg-brand/40 group-hover/handle:h-16 transition-all duration-300" />
+                <div className="absolute inset-y-0 left-0 w-[1px] bg-border opacity-0 group-hover/handle:opacity-100 transition-opacity" />
               </div>
               <div 
-                className="absolute inset-y-0 -left-1 w-2 cursor-ew-resize hover:bg-primary/20 transition-colors z-50 lg:block hidden"
+                className="absolute inset-y-0 -left-1.5 w-3 cursor-ew-resize group/handle z-50 lg:block hidden"
                 onMouseDown={startResizing}
               >
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-8 w-1 rounded-full bg-border group-hover/canvas:bg-primary/40 transition-colors" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-12 w-1 rounded-full bg-border/40 group-hover/handle:bg-brand/40 group-hover/handle:h-16 transition-all duration-300" />
+                <div className="absolute inset-y-0 right-0 w-[1px] bg-border opacity-0 group-hover/handle:opacity-100 transition-opacity" />
               </div>
             </div>
 
             {/* Resize Indicator overlay (only during custom resize) */}
             {customWidth && (
-              <div className="absolute bottom-4 right-4 rounded-md bg-black/80 px-2 py-1 text-[10px] font-mono text-white backdrop-blur-sm pointer-events-none">
-                Width: {Math.round(customWidth)}px
+              <div className="absolute bottom-8 right-8 rounded-full bg-brand px-4 py-1.5 text-[10px] font-bold tracking-wider text-white shadow-xl backdrop-blur-md pointer-events-none animate-in zoom-in-95 duration-200">
+                LARGURA: {Math.round(customWidth)}px
               </div>
             )}
           </div>

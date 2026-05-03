@@ -11,8 +11,6 @@ class LandingSetting extends Model
     protected $fillable = ['modules'];
 
     /**
-     * Get the attributes that should be cast.
-     *
      * @return array<string, string>
      */
     protected function casts(): array
@@ -22,9 +20,6 @@ class LandingSetting extends Model
         ];
     }
 
-    /**
-     * Get the singleton instance.
-     */
     public static function current()
     {
         return self::firstOrCreate(
@@ -32,21 +27,26 @@ class LandingSetting extends Model
             ['modules' => [
                 'branding' => [
                     'name' => 'Nuestro Restaurante',
-                    'tagline' => 'Una experiencia gastronómica única'
+                    'tagline' => 'Una experiencia gastronómica única',
+                    'palette' => [
+                        'brand' => '#6b3f2a',
+                        'brand_strong' => '#211512',
+                        'accent' => '#c4a06c',
+                    ],
                 ],
                 'topbar' => [
                     'isActive' => true,
-                    'message' => '¡Bienvenidos a nuestra nueva web!'
+                    'message' => '¡Bienvenidos a nuestra nueva web!',
                 ],
                 'hero' => [
                     'title' => 'Sabor y Tradición',
-                    'subtitle' => 'Descubre la esencia de nuestra cocina'
+                    'subtitle' => 'Descubre la esencia de nuestra cocina',
                 ],
                 'menu' => ['featured' => []],
                 'agenda' => ['events' => []],
                 'map' => [
                     'lat' => 40.416775,
-                    'lng' => -3.703790
+                    'lng' => -3.703790,
                 ],
                 'footer' => [
                     'address' => 'Calle Principal 123, Ciudad',
@@ -54,9 +54,9 @@ class LandingSetting extends Model
                     'phone' => '+34 900 000 000',
                     'social_links' => [
                         'instagram' => '#',
-                        'facebook' => '#'
-                    ]
-                ]
+                        'facebook' => '#',
+                    ],
+                ],
             ]]
         );
     }

@@ -81,6 +81,20 @@ export const useLandingData = () =>
     },
   })
 
+export const useUpdateLandingModule = <TData extends Record<string, unknown> = Record<string, unknown>>(module: string) => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (payload: TData) => {
+      const response = await apiClient.patch<ApiResponse<TData>>(`admin/landing/${module}`, payload)
+      return unwrapCmsData(response)
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: cmsKeys.landing() })
+    },
+  })
+}
+
 export const useCmsMenu = () =>
   useQuery<{ slug: string; label: string }[]>({
     queryKey: cmsKeys.menu(),

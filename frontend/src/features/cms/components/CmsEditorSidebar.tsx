@@ -18,9 +18,14 @@ export const CmsEditorSidebar = () => {
   const parsedPageId = Number(pageId)
   const { data: draft } = useAdminPageDraft(parsedPageId)
   
-  const { selectedBlockId, setSelectedBlockId, workingBlocks } = useCmsEditorStore()
+  const { selectedBlockId, setSelectedBlockId, workingBlocks, removeWorkingBlock } = useCmsEditorStore()
 
   const blocksToDisplay = workingBlocks.length > 0 ? workingBlocks : (draft?.blocks ?? [])
+  const handleDeleteBlock = (blockId: string) => {
+    if (!window.confirm('Eliminar este bloque del borrador actual?')) return
+
+    removeWorkingBlock(blockId)
+  }
 
   return (
     <aside className="flex flex-col gap-6 h-full">
@@ -85,6 +90,7 @@ export const CmsEditorSidebar = () => {
                     block={block}
                     isSelected={selectedBlockId === block.id}
                     onClick={() => setSelectedBlockId(block.id)}
+                    onDelete={() => handleDeleteBlock(block.id)}
                   />
                 ))}
               </div>

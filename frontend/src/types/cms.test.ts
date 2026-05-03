@@ -50,6 +50,51 @@ describe('cms normalizers', () => {
     ])
   })
 
+  it('accepts new restaurant landing blocks in normalizers', () => {
+    const blocks = normalizeCmsBlocks([
+      {
+        id: 'gallery-1',
+        type: 'GalleryBlock',
+        is_visible: true,
+        data: {
+          title: 'La casa',
+          intro: 'Sala y producto.',
+          images: [
+            { image_url: '/storage/uno.webp', alt: 'Sala', caption: 'Sala principal' },
+            { image_url: '/storage/dos.webp', alt: 'Plato', caption: 'Pase de temporada' },
+          ],
+        },
+      },
+      {
+        id: 'visit-1',
+        type: 'VisitInfoBlock',
+        is_visible: true,
+        data: {
+          title: 'Como visitarnos',
+          intro: 'Reserva y ubicacion.',
+          address: 'Arenal 14',
+          phone: '+34 915',
+          email: 'info@test.dev',
+          hours: [{ label: 'Martes', value: '13:30' }],
+          map_url: 'https://maps.google.com/example',
+          primary_cta_text: 'Reservar',
+          primary_cta_url: '/contacto',
+        },
+      },
+    ])
+
+    expect(blocks).toHaveLength(2)
+    expect(blocks[0]?.type).toBe('GalleryBlock')
+    expect(blocks[1]?.type).toBe('VisitInfoBlock')
+  })
+
+  it('creates defaults for new landing block types', () => {
+    expect(createDefaultBlock('GalleryBlock').type).toBe('GalleryBlock')
+    expect(createDefaultBlock('TestimonialsBlock').type).toBe('TestimonialsBlock')
+    expect(createDefaultBlock('VisitInfoBlock').type).toBe('VisitInfoBlock')
+    expect(createDefaultBlock('ReservationCtaBlock').type).toBe('ReservationCtaBlock')
+  })
+
   it('falls back to published blocks for public page payloads', () => {
     const page = normalizeCmsPage({
       id: 1,

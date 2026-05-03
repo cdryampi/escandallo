@@ -39,18 +39,35 @@ export const MediaField = ({ value, onChange, label, description }: Props) => {
 
       <div className="relative group pt-1">
         {value ? (
-          <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-border bg-surface-container-low shadow-inner">
-            <img
-              src={fullUrl ?? ''}
-              alt="Preview"
-              className="h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+          <div className="space-y-3">
+            <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-border bg-surface-container-low shadow-inner">
+              <img
+                src={fullUrl ?? ''}
+                alt="Preview"
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between bg-gradient-to-t from-black/70 via-black/15 to-transparent p-3">
+                <div className="rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
+                  Imagen seleccionada
+                </div>
+                <a
+                  href={fullUrl ?? '#'}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-full bg-white/90 p-1.5 text-muted-foreground shadow-sm transition-colors hover:text-primary"
+                  title="Ver original"
+                >
+                  <ExternalLink className="size-3" />
+                </a>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
               <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="secondary" size="sm" className="gap-2">
+                  <Button type="button" variant="secondary" size="sm" className="gap-2">
                     <ImageIcon className="size-4" />
-                    Cambiar
+                    Cambiar imagen
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-3xl">
@@ -61,26 +78,18 @@ export const MediaField = ({ value, onChange, label, description }: Props) => {
                 </DialogContent>
               </Dialog>
               <Button
-                variant="danger"
+                type="button"
+                variant="outline"
                 size="sm"
                 className="gap-2"
                 onClick={handleClear}
               >
                 <X className="size-4" />
-                Eliminar
+                Quitar imagen
               </Button>
-            </div>
-            
-            <div className="absolute bottom-2 right-2 flex gap-1">
-               <a 
-                href={fullUrl ?? '#'} 
-                target="_blank" 
-                rel="noreferrer"
-                className="rounded-full bg-white/90 p-1.5 text-muted-foreground hover:text-primary transition-colors shadow-sm"
-                title="Ver original"
-               >
-                 <ExternalLink className="size-3" />
-               </a>
+              <p className="text-[10px] text-muted-foreground">
+                Al cambiar la imagen, recuerda guardar el bloque para persistirla.
+              </p>
             </div>
           </div>
         ) : (

@@ -115,7 +115,7 @@ export const CmsEditorSettingsPage = () => {
             <div className="flex items-start gap-3">
               <Info className="mt-0.5 size-4 text-info-foreground" />
               <p className="text-sm text-info-foreground">
-                El enlace del menu principal se controla desde SEO con campo <strong>Mostrar en el menu principal</strong>.
+                Los estilos globales de la landing ahora viven en <strong>Ajustes &gt; Estilos</strong>, fuera del CMS.
               </p>
             </div>
           </div>

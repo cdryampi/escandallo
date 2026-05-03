@@ -9,6 +9,7 @@ interface CmsEditorState {
   workingBlocks: Block[]
   setWorkingBlocks: (blocks: Block[]) => void
   updateWorkingBlock: (id: string, data: Block['data']) => void
+  removeWorkingBlock: (id: string) => void
   
   // Navigation internal to the editor
   currentTab: 'content' | 'seo' | 'settings' | 'history'
@@ -42,6 +43,16 @@ export const useCmsEditorStore = create<CmsEditorState>((set) => ({
   updateWorkingBlock: (id, data) => set((state) => ({
     workingBlocks: state.workingBlocks.map(b => b.id === id ? ({ ...b, data } as Block) : b)
   })),
+  removeWorkingBlock: (id) => set((state) => {
+    const nextBlocks = state.workingBlocks.filter((block) => block.id !== id)
+    const nextSelectedBlockId =
+      state.selectedBlockId === id ? (nextBlocks[0]?.id ?? null) : state.selectedBlockId
+
+    return {
+      workingBlocks: nextBlocks,
+      selectedBlockId: nextSelectedBlockId,
+    }
+  }),
 
   currentTab: 'content',
   setCurrentTab: (tab) => set({ currentTab: tab }),

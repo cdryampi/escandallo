@@ -15,33 +15,31 @@ interface MetricCardProps {
 const signalToneClass: Record<MetricTone, string> = {
   default: 'bg-brand',
   success: 'bg-success',
-  warning: 'bg-warning',
+  warning: 'bg-accent',
 }
 
 const iconToneClass: Record<MetricTone, string> = {
-  default: 'bg-brand-muted text-brand',
+  default: 'bg-brand/10 text-brand-strong',
   success: 'bg-success-soft text-success-foreground',
-  warning: 'bg-warning-soft text-warning-foreground',
+  warning: 'bg-accent-soft/30 text-accent-foreground',
 }
 
 export const MetricCard = ({ title, value, description, icon: Icon, tone = 'default' }: MetricCardProps) => (
-  <Card className="overflow-hidden">
-    <div className="grid grid-cols-[4px_1fr]">
-      <div className={cn(signalToneClass[tone])} />
+  <Card className="relative overflow-hidden group transition-all duration-300 hover:border-brand/20 shadow-soft">
+    {/* Refined Signal Indicator - Thinner and more subtle */}
+    <div className={cn('absolute left-0 top-0 bottom-0 w-0.5', signalToneClass[tone])} />
+    
+    <CardHeader className="flex-row items-start justify-between gap-4 space-y-0 pb-2 border-none bg-transparent">
       <div>
-        <CardHeader className="flex-row items-start justify-between gap-4 space-y-0">
-          <div>
-            <CardDescription className="type-label-md text-muted-foreground">{title}</CardDescription>
-            <CardTitle className="mt-2 text-foreground type-display-md type-tabular">{value}</CardTitle>
-          </div>
-          <div className={cn('rounded-[var(--ds-radius-lg)] p-3', iconToneClass[tone])}>
-            <Icon className="size-5" />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <p className="type-body-sm text-muted-foreground">{description}</p>
-        </CardContent>
+        <CardDescription className="type-label-md text-brand-strong/60 font-semibold uppercase tracking-wider">{title}</CardDescription>
+        <CardTitle className="mt-1.5 text-foreground type-display-md type-tabular tabular-nums leading-none tracking-tight">{value}</CardTitle>
       </div>
-    </div>
+      <div className={cn('rounded-sm p-2 transition-transform group-hover:scale-105', iconToneClass[tone])}>
+        <Icon className="size-4.5 stroke-[var(--ds-icon-stroke)]" />
+      </div>
+    </CardHeader>
+    <CardContent className="pt-0">
+      <p className="type-body-sm text-muted-foreground/80 leading-relaxed">{description}</p>
+    </CardContent>
   </Card>
 )

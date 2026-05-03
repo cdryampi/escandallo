@@ -13,6 +13,7 @@ export const MediaPicker = ({ onSelect, currentUrl }: Props) => {
   const { data: media, isLoading, refetch } = useAdminMedia()
   const uploadMedia = useUploadCmsMedia()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const normalizedCurrentUrl = currentUrl ? resolveMediaUrl(currentUrl)?.replace(/\/+$/, '') : null
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -25,6 +26,8 @@ export const MediaPicker = ({ onSelect, currentUrl }: Props) => {
       toast.success('Imagen subida y seleccionada.')
     } catch {
       toast.error('Error al subir imagen.')
+    } finally {
+      e.target.value = ''
     }
   }
 
@@ -60,15 +63,16 @@ export const MediaPicker = ({ onSelect, currentUrl }: Props) => {
 
         {/* Galería de imágenes */}
         {media?.map((item) => {
-          const normalize = (u: string) => (u.startsWith('/') ? u : `/${u}`)
-          const isSelected = currentUrl ? normalize(item.url) === normalize(currentUrl) : false
           const fullUrl = resolveMediaUrl(item.url)
-          
+          const normalizedItemUrl = fullUrl?.replace(/\/+$/, '') ?? item.url.replace(/\/+$/, '')
+          const isSelected = normalizedCurrentUrl === normalizedItemUrl
+
           return (
             <button
               key={item.url}
               type="button"
               onClick={() => onSelect(item.url)}
+              aria-pressed={isSelected}
               className={`group relative aspect-square overflow-hidden rounded-lg border-2 transition-all ${
                 isSelected ? 'border-primary ring-2 ring-primary/20' : 'border-transparent hover:border-border'
               }`}

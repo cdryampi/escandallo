@@ -67,6 +67,58 @@ export const FeatureListBlockSchema = z.object({
   features: z.array(FeatureItemSchema).min(1, 'Al menos una caracteristica'),
 })
 
+export const GalleryImageSchema = z.object({
+  image_url: optionalMediaUrlSchema,
+  alt: z.string().min(1, 'El texto alternativo es obligatorio'),
+  caption: z.string().min(1, 'La leyenda es obligatoria'),
+})
+
+export const GalleryBlockSchema = z.object({
+  title: z.string().min(1, 'El titulo es obligatorio'),
+  intro: z.string().min(1, 'La introduccion es obligatoria'),
+  images: z.array(GalleryImageSchema).min(2, 'Al menos dos imagenes').max(6, 'Maximo seis imagenes'),
+})
+
+export const TestimonialItemSchema = z.object({
+  quote: z.string().min(1, 'La cita es obligatoria'),
+  author: z.string().min(1, 'El autor es obligatorio'),
+  source: z.string().min(1, 'La fuente es obligatoria'),
+})
+
+export const TestimonialsBlockSchema = z.object({
+  title: z.string().min(1, 'El titulo es obligatorio'),
+  intro: z.string().min(1, 'La introduccion es obligatoria'),
+  testimonials: z.array(TestimonialItemSchema).min(2, 'Al menos dos testimonios').max(6, 'Maximo seis testimonios'),
+})
+
+export const VisitInfoHourSchema = z.object({
+  label: z.string().min(1, 'La etiqueta es obligatoria'),
+  value: z.string().min(1, 'El valor es obligatorio'),
+})
+
+export const VisitInfoBlockSchema = z.object({
+  title: z.string().min(1, 'El titulo es obligatorio'),
+  intro: z.string().min(1, 'La introduccion es obligatoria'),
+  address: z.string().min(1, 'La direccion es obligatoria'),
+  phone: z.string().min(1, 'El telefono es obligatorio'),
+  email: z.string().email('Email invalido'),
+  hours: z.array(VisitInfoHourSchema).min(1, 'Al menos un horario'),
+  map_url: z.string().url('URL del mapa invalida').refine(isAbsoluteUrl, 'La URL del mapa debe ser absoluta'),
+  primary_cta_text: z.string().min(1, 'El texto del CTA principal es obligatorio'),
+  primary_cta_url: optionalLinkSchema.refine((value) => typeof value === 'string' && value.trim().length > 0, 'El enlace del CTA principal es obligatorio'),
+})
+
+export const ReservationCtaBlockSchema = z.object({
+  eyebrow: z.string().min(1, 'El eyebrow es obligatorio'),
+  title: z.string().min(1, 'El titulo es obligatorio'),
+  body: z.string().min(1, 'El cuerpo es obligatorio'),
+  primary_cta_text: z.string().min(1, 'El texto del CTA principal es obligatorio'),
+  primary_cta_url: optionalLinkSchema.refine((value) => typeof value === 'string' && value.trim().length > 0, 'El enlace del CTA principal es obligatorio'),
+  secondary_cta_text: z.string().optional().nullable(),
+  secondary_cta_url: optionalLinkSchema,
+  background_image_url: optionalMediaUrlSchema,
+})
+
 export const ContactFormBlockSchema = z.object({
   heading: z.string().min(1, 'El encabezado es obligatorio'),
   recipient_email: z.string().email('Email invalido'),
@@ -115,8 +167,12 @@ export const CmsBlockSchema = z.discriminatedUnion('type', [
   z.object({ id: z.string(), type: z.literal('HeroBlock'), is_visible: z.coerce.boolean(), data: HeroBlockSchema }),
   z.object({ id: z.string(), type: z.literal('RichTextBlock'), is_visible: z.coerce.boolean(), data: RichTextBlockSchema }),
   z.object({ id: z.string(), type: z.literal('FeatureListBlock'), is_visible: z.coerce.boolean(), data: FeatureListBlockSchema }),
+  z.object({ id: z.string(), type: z.literal('GalleryBlock'), is_visible: z.coerce.boolean(), data: GalleryBlockSchema }),
   z.object({ id: z.string(), type: z.literal('ContactFormBlock'), is_visible: z.coerce.boolean(), data: ContactFormBlockSchema }),
   z.object({ id: z.string(), type: z.literal('MenuHighlightsBlock'), is_visible: z.coerce.boolean(), data: MenuHighlightsBlockSchema }),
+  z.object({ id: z.string(), type: z.literal('TestimonialsBlock'), is_visible: z.coerce.boolean(), data: TestimonialsBlockSchema }),
+  z.object({ id: z.string(), type: z.literal('VisitInfoBlock'), is_visible: z.coerce.boolean(), data: VisitInfoBlockSchema }),
+  z.object({ id: z.string(), type: z.literal('ReservationCtaBlock'), is_visible: z.coerce.boolean(), data: ReservationCtaBlockSchema }),
 ])
 
 /**
@@ -127,8 +183,12 @@ export const CmsBlockApiSchema = z.discriminatedUnion('type', [
   z.object({ id: z.string(), type: z.literal('HeroBlock'), is_visible: z.coerce.boolean(), data: HeroBlockSchema }),
   z.object({ id: z.string(), type: z.literal('RichTextBlock'), is_visible: z.coerce.boolean(), data: RichTextBlockSchema }),
   z.object({ id: z.string(), type: z.literal('FeatureListBlock'), is_visible: z.coerce.boolean(), data: FeatureListBlockSchema }),
+  z.object({ id: z.string(), type: z.literal('GalleryBlock'), is_visible: z.coerce.boolean(), data: GalleryBlockSchema }),
   z.object({ id: z.string(), type: z.literal('ContactFormBlock'), is_visible: z.coerce.boolean(), data: ContactFormBlockSchema }),
   z.object({ id: z.string(), type: z.literal('MenuHighlightsBlock'), is_visible: z.coerce.boolean(), data: MenuHighlightsBlockApiSchema }),
+  z.object({ id: z.string(), type: z.literal('TestimonialsBlock'), is_visible: z.coerce.boolean(), data: TestimonialsBlockSchema }),
+  z.object({ id: z.string(), type: z.literal('VisitInfoBlock'), is_visible: z.coerce.boolean(), data: VisitInfoBlockSchema }),
+  z.object({ id: z.string(), type: z.literal('ReservationCtaBlock'), is_visible: z.coerce.boolean(), data: ReservationCtaBlockSchema }),
 ])
 
 export const PageVersionSchema = z.object({
@@ -167,8 +227,12 @@ export const CmsPageSchema = z.object({
 export type HeroBlockData = z.infer<typeof HeroBlockSchema>
 export type RichTextBlockData = z.infer<typeof RichTextBlockSchema>
 export type FeatureListBlockData = z.infer<typeof FeatureListBlockSchema>
+export type GalleryBlockData = z.infer<typeof GalleryBlockSchema>
 export type ContactFormBlockData = z.infer<typeof ContactFormBlockSchema>
 export type MenuHighlightsBlockData = z.infer<typeof MenuHighlightsBlockSchema>
+export type TestimonialsBlockData = z.infer<typeof TestimonialsBlockSchema>
+export type VisitInfoBlockData = z.infer<typeof VisitInfoBlockSchema>
+export type ReservationCtaBlockData = z.infer<typeof ReservationCtaBlockSchema>
 export type SeoSettingsValues = z.infer<typeof SeoSettingsSchema>
 export type CmsBlockValues = z.infer<typeof CmsBlockSchema>
 export type PageVersionValues = z.infer<typeof PageVersionSchema>

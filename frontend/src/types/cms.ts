@@ -10,8 +10,12 @@ import type {
   HeroBlockData,
   RichTextBlockData,
   FeatureListBlockData,
+  GalleryBlockData,
   ContactFormBlockData,
   MenuHighlightsBlockData,
+  TestimonialsBlockData,
+  VisitInfoBlockData,
+  ReservationCtaBlockData,
   PublicContactSubmissionValues,
 } from '@/features/cms/schemas/cms.schema'
 
@@ -19,8 +23,12 @@ export type {
   HeroBlockData,
   RichTextBlockData,
   FeatureListBlockData,
+  GalleryBlockData,
   ContactFormBlockData,
   MenuHighlightsBlockData,
+  TestimonialsBlockData,
+  VisitInfoBlockData,
+  ReservationCtaBlockData,
   PublicContactSubmissionValues,
 }
 
@@ -28,8 +36,12 @@ export const CMS_BLOCK_TYPES = [
   'HeroBlock',
   'RichTextBlock',
   'FeatureListBlock',
+  'GalleryBlock',
   'ContactFormBlock',
   'MenuHighlightsBlock',
+  'TestimonialsBlock',
+  'VisitInfoBlock',
+  'ReservationCtaBlock',
 ] as const
 
 export type BlockType = (typeof CMS_BLOCK_TYPES)[number]
@@ -137,6 +149,20 @@ export const createDefaultBlock = (type: BlockType): Block => {
           success_message: '',
         },
       }
+    case 'GalleryBlock':
+      return {
+        id,
+        type,
+        is_visible: true,
+        data: {
+          title: '',
+          intro: '',
+          images: [
+            { image_url: '', alt: '', caption: '' },
+            { image_url: '', alt: '', caption: '' },
+          ],
+        },
+      }
     case 'MenuHighlightsBlock':
       return {
         id,
@@ -145,6 +171,53 @@ export const createDefaultBlock = (type: BlockType): Block => {
         data: {
           title: '',
           recipe_ids: [],
+        },
+      }
+    case 'TestimonialsBlock':
+      return {
+        id,
+        type,
+        is_visible: true,
+        data: {
+          title: '',
+          intro: '',
+          testimonials: [
+            { quote: '', author: '', source: '' },
+            { quote: '', author: '', source: '' },
+          ],
+        },
+      }
+    case 'VisitInfoBlock':
+      return {
+        id,
+        type,
+        is_visible: true,
+        data: {
+          title: '',
+          intro: '',
+          address: '',
+          phone: '',
+          email: '',
+          hours: [{ label: '', value: '' }],
+          map_url: '',
+          primary_cta_text: '',
+          primary_cta_url: '',
+        },
+      }
+    case 'ReservationCtaBlock':
+      return {
+        id,
+        type,
+        is_visible: true,
+        data: {
+          eyebrow: '',
+          title: '',
+          body: '',
+          primary_cta_text: '',
+          primary_cta_url: '',
+          secondary_cta_text: '',
+          secondary_cta_url: '',
+          background_image_url: '',
         },
       }
   }

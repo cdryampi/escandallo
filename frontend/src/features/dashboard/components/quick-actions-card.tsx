@@ -22,12 +22,12 @@ export const QuickActionsCard = () => (
         <Link
           key={action.to}
           to={action.to as '/backoffice/ingredients'}
-          className="group flex items-center gap-3 rounded-lg border border-border bg-surface px-4 py-3 transition-all hover:border-brand/40 hover:bg-brand-muted/5"
+          className="group flex items-center gap-3 rounded-md border border-border bg-surface/30 px-4 py-3 transition-all hover:border-brand/40 hover:bg-surface-elevated"
         >
-          <div className="flex size-8 items-center justify-center rounded bg-surface-subtle text-muted-foreground transition-colors group-hover:text-brand">
+          <div className="flex size-8 items-center justify-center rounded-sm bg-surface-elevated text-muted-foreground transition-colors group-hover:text-brand border border-border/50 shadow-soft">
             <action.icon className="size-4" />
           </div>
-          <span className="type-body-md font-medium text-foreground">{action.label}</span>
+          <span className="type-body-md font-semibold text-foreground tracking-tight">{action.label}</span>
         </Link>
       ))}
     </CardContent>

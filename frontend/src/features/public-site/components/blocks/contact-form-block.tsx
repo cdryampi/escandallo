@@ -1,14 +1,14 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Mail, MapPin, Phone, Send } from 'lucide-react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { useCreateContactSubmission } from '@/api/cms'
 import { ApiError, ValidationError } from '@/api/api-error'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { PublicContactSubmissionSchema, type PublicContactSubmissionValues } from '@/features/cms/schemas/cms.schema'
 import type { ContactFormBlockData } from '@/types/cms'
-import { Mail, MapPin, Phone, Send } from 'lucide-react'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
 
 interface Props {
   data: ContactFormBlockData
@@ -64,127 +64,137 @@ export const ContactFormBlock = ({ data, pageId }: Props) => {
   })
 
   return (
-    <section className="bg-surface-container-low py-24">
-      <div className="container mx-auto max-w-7xl px-4">
-        <div className="flex flex-wrap">
-          <div className="mb-12 w-full px-4 lg:mb-0 lg:w-1/3">
-            <div className="max-w-md">
-              <h2 className="mb-6 text-4xl font-bold text-on-surface font-display">{heading}</h2>
-              <p className="mb-10 text-lg leading-relaxed text-on-surface-variant font-body">
-                Estamos aqui para escucharle. Nuestro equipo respondera en un plazo maximo de 24 horas laborables.
-              </p>
+    <section className="public-section bg-background">
+      <div className="public-container grid gap-6 xl:grid-cols-[0.86fr_1.14fr]">
+        <div className="public-surface-card relative overflow-hidden p-8 md:p-10">
+          <div className="relative">
+            <p className="ui-kicker">Atencion directa</p>
+            <h2 className="mt-6 type-display-md text-brand-strong dark:text-foreground">{heading}</h2>
+            <div className="public-divider" />
+            <p className="public-intro type-body-lg">
+              Si deseas reservar o preparar una visita especial, escribe con calma. Respuesta clara, tono sobrio.
+            </p>
 
-              <div className="space-y-6">
-                <div className="flex items-center gap-4">
-                  <div className="rounded-lg bg-primary/10 p-3 text-primary">
-                    <Mail className="size-5" />
+            <div className="mt-12 space-y-4">
+              {[
+                { icon: Mail, label: 'Correo Editorial', value: recipientEmail },
+                { icon: Phone, label: 'Atencion Telefonica', value: '+34 915 200 480' },
+                { icon: MapPin, label: 'Ubicacion', value: 'Calle Arenal, 14 - Madrid' },
+              ].map((item, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-start gap-4 rounded-[1.1rem] border border-border/70 bg-background px-5 py-5"
+                >
+                  <div className="flex size-11 shrink-0 items-center justify-center rounded-full border border-brand/10 bg-brand/[0.05] text-brand">
+                    <item.icon className="size-5" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Email</p>
-                    <p className="text-on-surface font-body">{recipientEmail}</p>
+                    <p className="type-label-md text-[10px] tracking-[0.14em] text-brand/38">{item.label}</p>
+                    <p className="mt-2 text-sm font-semibold text-brand-strong dark:text-foreground">{item.value}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="rounded-lg bg-accent/10 p-3 text-accent">
-                    <Phone className="size-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Telefono</p>
-                    <p className="text-on-surface font-body">+34 900 000 000</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="rounded-lg bg-info/10 p-3 text-info">
-                    <MapPin className="size-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Ubicacion</p>
-                    <p className="text-on-surface font-body">Calle de la Gastronomia, 12, Madrid</p>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
+        </div>
 
-          <div className="w-full px-4 lg:w-2/3">
-            <div className="rounded-2xl border border-border/50 bg-white p-8 shadow-xl md:p-12">
-              <form
-                className="space-y-6"
-                onSubmit={handleSubmit}
-              >
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <label htmlFor="contact-name" className="text-xs font-bold uppercase tracking-wider text-on-surface-variant font-body">Nombre completo</label>
-                    <Input
-                      id="contact-name"
-                      {...form.register('name')}
-                      className="h-12 rounded-xl bg-surface-container-lowest px-4"
-                      placeholder="Ej. Juan Perez"
-                    />
-                    {form.formState.errors.name ? <p className="ui-field-error">{form.formState.errors.name.message}</p> : null}
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="contact-email" className="text-xs font-bold uppercase tracking-wider text-on-surface-variant font-body">Correo electronico</label>
-                    <Input
-                      id="contact-email"
-                      type="email"
-                      {...form.register('email')}
-                      className="h-12 rounded-xl bg-surface-container-lowest px-4"
-                      placeholder="Ej. juan@ejemplo.com"
-                    />
-                    {form.formState.errors.email ? <p className="ui-field-error">{form.formState.errors.email.message}</p> : null}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label htmlFor="contact-subject" className="text-xs font-bold uppercase tracking-wider text-on-surface-variant font-body">Asunto de consulta</label>
-                  <Input
-                    id="contact-subject"
-                    {...form.register('subject')}
-                    className="h-12 rounded-xl bg-surface-container-lowest px-4"
-                    placeholder="En que podemos ayudarle hoy?"
-                  />
-                  {form.formState.errors.subject ? <p className="ui-field-error">{form.formState.errors.subject.message}</p> : null}
-                </div>
-
-                <div className="space-y-2">
-                  <label htmlFor="contact-message" className="text-xs font-bold uppercase tracking-wider text-on-surface-variant font-body">Mensaje detallado</label>
-                  <Textarea
-                    id="contact-message"
-                    {...form.register('message')}
-                    rows={6}
-                    className="min-h-[144px] resize-y rounded-xl bg-surface-container-lowest px-4 py-4"
-                    placeholder="Escriba aqui detalles de su solicitud..."
-                  />
-                  {form.formState.errors.message ? <p className="ui-field-error">{form.formState.errors.message.message}</p> : null}
-                </div>
-
-                {isSubmitted ? (
-                  <p className="rounded-md bg-[#DCF2E2] px-4 py-3 text-sm text-[#1E4D2B]" aria-live="polite">
-                    {successMessage}
-                  </p>
-                ) : null}
-                {submitError ? (
-                  <p className="rounded-md border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-danger" aria-live="polite">
-                    {submitError}
-                  </p>
-                ) : null}
-
-                <div className="pt-4">
-                  <Button
-                    type="submit"
-                    disabled={createContactSubmission.isPending}
-                    className="group h-12 w-full rounded-xl px-8 font-bold shadow-md md:w-auto"
-                  >
-                    <Send className="size-4 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
-                    {createContactSubmission.isPending ? 'Enviando...' : 'Enviar mensaje'}
-                  </Button>
-                </div>
-              </form>
+        <div className="public-surface-card relative overflow-hidden p-8 md:p-10">
+          <div className="absolute right-0 top-0 h-28 w-28 rounded-full bg-brand/[0.04] blur-3xl" />
+          <div className="relative">
+            <div className="mb-10">
+              <p className="ui-kicker">Formulario de Solicitud</p>
+              <h3 className="mt-5 font-heading text-[2.5rem] tracking-[-0.04em] text-brand-strong dark:text-foreground">Reserva o consulta con detalle</h3>
+              <p className="mt-4 max-w-2xl type-body-sm leading-relaxed text-muted-foreground">
+                Cuentanos el contexto. Misma claridad funcional. Menos tono administrativo.
+              </p>
             </div>
+
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <Field label="Nombre" error={form.formState.errors.name?.message}>
+                  <Input
+                    id="contact-name"
+                    {...form.register('name')}
+                    className="h-12 rounded-[1rem] border-border/60 bg-background px-4 focus-visible:border-brand/40 focus-visible:ring-brand/5"
+                    placeholder="Juan Perez"
+                  />
+                </Field>
+
+                <Field label="Email" error={form.formState.errors.email?.message}>
+                  <Input
+                    id="contact-email"
+                    type="email"
+                    {...form.register('email')}
+                    className="h-12 rounded-[1rem] border-border/60 bg-background px-4 focus-visible:border-brand/40 focus-visible:ring-brand/5"
+                    placeholder="juan@ejemplo.com"
+                  />
+                </Field>
+              </div>
+
+              <Field label="Asunto" error={form.formState.errors.subject?.message}>
+                <Input
+                  id="contact-subject"
+                  {...form.register('subject')}
+                  className="h-12 rounded-[1rem] border-border/60 bg-background px-4 focus-visible:border-brand/40 focus-visible:ring-brand/5"
+                  placeholder="Reserva privada o consulta general"
+                />
+              </Field>
+
+              <Field label="Mensaje" error={form.formState.errors.message?.message}>
+                <Textarea
+                  id="contact-message"
+                  {...form.register('message')}
+                  rows={5}
+                  className="min-h-[160px] rounded-[1rem] border-border/60 bg-background px-4 py-4 focus-visible:border-brand/40 focus-visible:ring-brand/5"
+                  placeholder="Detalla tu solicitud aqui..."
+                />
+              </Field>
+
+              {isSubmitted ? (
+                <div className="animate-in slide-in-from-bottom-2 fade-in rounded-[1rem] border border-success/20 bg-success-soft/30 px-4 py-4 type-body-sm font-medium text-success-foreground" aria-live="polite">
+                  {successMessage}
+                </div>
+              ) : null}
+
+              {submitError ? (
+                <div className="animate-in slide-in-from-bottom-2 fade-in rounded-[1rem] border border-danger/20 bg-danger-soft/30 px-4 py-4 type-body-sm font-medium text-danger-foreground" aria-live="polite">
+                  {submitError}
+                </div>
+              ) : null}
+
+              <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
+                <p className="type-label-md text-[10px] tracking-[0.14em] text-brand/36">Respuesta habitual en menos de 24 horas laborables</p>
+                <Button
+                  type="submit"
+                  disabled={createContactSubmission.isPending}
+                  className="group h-14 rounded-full bg-brand-strong px-8 text-[11px] font-semibold uppercase tracking-[0.14em] text-white transition-all hover:bg-brand hover:shadow-overlay active:scale-[0.98]"
+                >
+                  {createContactSubmission.isPending ? 'Enviando...' : (
+                    <>
+                      <span>Enviar solicitud</span>
+                      <Send className="size-4 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
     </section>
   )
 }
+
+interface FieldProps {
+  label: string
+  error?: string
+  children: React.ReactNode
+}
+
+const Field = ({ label, error, children }: FieldProps) => (
+  <div className="space-y-2">
+    <label className="type-label-md text-[10px] tracking-[0.14em] text-brand-strong/56 dark:text-white/56">{label}</label>
+    {children}
+    {error ? <p className="mt-1 text-xs font-medium text-danger">{error}</p> : null}
+  </div>
+)

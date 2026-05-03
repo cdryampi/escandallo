@@ -1,11 +1,15 @@
 import { type BlockType } from '@/types/cms'
 import {
+  CalendarHeart,
+  Images,
   Layout,
-  Type,
   List,
   Mail,
-  Star,
+  MapPinned,
   Plus,
+  Quote,
+  Star,
+  Type,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -40,7 +44,7 @@ const BLOCK_CATEGORIES: BlockCategory[] = [
         type: 'HeroBlock',
         label: 'Imagen Hero',
         icon: <Layout className="size-4" />,
-        description: 'Cabecera con imagen y título principal.',
+        description: 'Cabecera principal con imagen, titulo y CTA.',
       },
     ],
   },
@@ -51,13 +55,19 @@ const BLOCK_CATEGORIES: BlockCategory[] = [
         type: 'RichTextBlock',
         label: 'Texto Enriquecido',
         icon: <Type className="size-4" />,
-        description: 'Bloque de texto libre con formato Tiptap.',
+        description: 'Bloque editorial libre con formato Tiptap.',
       },
       {
         type: 'FeatureListBlock',
-        label: 'Lista de Características',
+        label: 'Lista de Caracteristicas',
         icon: <List className="size-4" />,
-        description: 'Cuadrícula de servicios o iconos destacados.',
+        description: 'Capacidades, atributos o servicios destacados.',
+      },
+      {
+        type: 'GalleryBlock',
+        label: 'Galeria Editorial',
+        icon: <Images className="size-4" />,
+        description: 'Recorrido visual de sala, producto o ambiente.',
       },
     ],
   },
@@ -68,7 +78,25 @@ const BLOCK_CATEGORIES: BlockCategory[] = [
         type: 'MenuHighlightsBlock',
         label: 'Platos Destacados',
         icon: <Star className="size-4" />,
-        description: 'Selector visual de recetas del catálogo.',
+        description: 'Selector visual de recetas del catalogo.',
+      },
+      {
+        type: 'TestimonialsBlock',
+        label: 'Testimonios',
+        icon: <Quote className="size-4" />,
+        description: 'Resenas, citas o prueba social de la casa.',
+      },
+      {
+        type: 'VisitInfoBlock',
+        label: 'Como Visitarnos',
+        icon: <MapPinned className="size-4" />,
+        description: 'Direccion, horarios, mapa y CTA de visita.',
+      },
+      {
+        type: 'ReservationCtaBlock',
+        label: 'CTA de Reserva',
+        icon: <CalendarHeart className="size-4" />,
+        description: 'Llamada fuerte a reserva o eventos privados.',
       },
       {
         type: 'ContactFormBlock',
@@ -86,27 +114,27 @@ export const BlockSelector = ({ onAddBlock }: Props) => {
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="gap-2 border-primary/30 text-primary hover:bg-primary/5">
           <Plus className="size-4" />
-          Añadir Bloque
+          Anadir Bloque
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-64" align="end">
+      <DropdownMenuContent className="w-72" align="end">
         {BLOCK_CATEGORIES.map((category, idx) => (
           <DropdownMenuGroup key={category.label}>
             {idx > 0 && <DropdownMenuSeparator />}
-            <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground px-2 py-1.5">
+            <DropdownMenuLabel className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
               {category.label}
             </DropdownMenuLabel>
             {category.blocks.map((block) => (
               <DropdownMenuItem
                 key={block.type}
                 onClick={() => onAddBlock(block.type)}
-                className="flex flex-col items-start gap-1 p-3 cursor-pointer focus:bg-primary/5 transition-colors group/item"
+                className="group/item flex cursor-pointer flex-col items-start gap-1 p-3 transition-colors focus:bg-primary/5"
               >
-                <div className="flex items-center gap-2.5 font-bold text-sm">
-                  <span className="text-primary/70 group-hover/item:text-primary transition-colors">{block.icon}</span>
-                  <span className="text-on-surface group-hover/item:text-primary transition-colors">{block.label}</span>
+                <div className="flex items-center gap-2.5 text-sm font-bold">
+                  <span className="text-primary/70 transition-colors group-hover/item:text-primary">{block.icon}</span>
+                  <span className="text-on-surface transition-colors group-hover/item:text-primary">{block.label}</span>
                 </div>
-                <span className="text-[10px] text-muted-foreground leading-normal pl-6.5">
+                <span className="pl-6.5 text-[10px] leading-normal text-muted-foreground">
                   {block.description}
                 </span>
               </DropdownMenuItem>

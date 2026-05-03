@@ -2,16 +2,18 @@ import { useCmsRecipeOptions } from '@/api/cms'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { MenuHighlightsBlockSchema, type MenuHighlightsBlockData } from '../schemas/cms.schema'
 
 interface Props {
   defaultValues: MenuHighlightsBlockData
   onSubmit: (values: MenuHighlightsBlockData) => void
+  onChange: (values: MenuHighlightsBlockData) => void
   onCancel: () => void
 }
 
-export const MenuHighlightsBlockForm = ({ defaultValues, onSubmit, onCancel }: Props) => {
+export const MenuHighlightsBlockForm = ({ defaultValues, onSubmit, onChange, onCancel }: Props) => {
   const form = useForm<MenuHighlightsBlockData>({
     resolver: zodResolver(MenuHighlightsBlockSchema),
     defaultValues: {
@@ -19,6 +21,13 @@ export const MenuHighlightsBlockForm = ({ defaultValues, onSubmit, onCancel }: P
       recipe_ids: defaultValues.recipe_ids ?? [],
     },
   })
+  useEffect(() => {
+    const subscription = form.watch((values) => {
+      onChange(values as MenuHighlightsBlockData)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [form, onChange])
 
   const { data: recipes = [], isLoading, error } = useCmsRecipeOptions()
 
@@ -108,7 +117,7 @@ export const MenuHighlightsBlockForm = ({ defaultValues, onSubmit, onCancel }: P
 
       <div className="sticky bottom-[-40px] -mx-10 px-10 py-6 bg-white/95 backdrop-blur-md border-t border-border flex justify-end gap-4 z-10 shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
         <Button type="button" variant="outline" onClick={onCancel} className="px-8 h-11 text-sm font-semibold">Cancelar</Button>
-        <Button type="submit" className="px-10 h-11 text-sm font-bold shadow-primary/20 shadow-lg">Aplicar cambios</Button>
+        <Button type="submit" className="px-10 h-11 text-sm font-bold shadow-primary/20 shadow-lg">Guardar bloque</Button>
       </div>
     </form>
   )

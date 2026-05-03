@@ -7,6 +7,7 @@ import {
   Send,
   Smartphone,
   Tablet as TabletIcon,
+  Trash2,
   X,
   PanelLeft,
   PanelRight,
@@ -16,6 +17,7 @@ import {
   useAdminPage,
   useAdminPageDraft,
   usePublishPageVersion,
+  useUpdatePageVersion,
 } from '@/api/cms'
 import { ErrorState } from '@/components/feedback/error-state'
 import { LoadingState } from '@/components/feedback/loading-state'
@@ -40,6 +42,7 @@ import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { useState } from 'react'
 import { SortableBlockItem } from '../components/SortableBlockItem'
 import { cn } from '@/lib/utils'
+import type { Block } from '@/types/cms'
 
 export const CmsEditorLayout = () => {
   const { pageId } = useParams({ from: '/backoffice/cms/pages/$pageId' })
@@ -65,6 +68,7 @@ export const CmsEditorLayout = () => {
     workingBlocks,
     setWorkingBlocks,
     updateWorkingBlock,
+    removeWorkingBlock,
     deviceMode,
     setDeviceMode,
     showSidebar,
@@ -76,6 +80,7 @@ export const CmsEditorLayout = () => {
   const [activeId, setActiveId] = useState<string | null>(null)
 
   const publishVersion = usePublishPageVersion()
+  const updateVersion = useUpdatePageVersion()
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -134,17 +139,67 @@ export const CmsEditorLayout = () => {
     window.open(url, '_blank')
   }
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
     if (!window.confirm('Publicar esta version?')) return
 
-    publishVersion.mutate(draft.id, {
-      onSuccess: () => toast.success('Pagina publicada con exito.'),
-      onError: () => toast.error('Error al publicar.'),
-    })
+    try {
+      await updateVersion.mutateAsync({
+        versionId: draft.id,
+        data: { blocks: workingBlocks },
+      })
+
+      await publishVersion.mutateAsync(draft.id)
+
+      toast.success('Pagina publicada con exito.', {
+        description: 'Se guardo el estado actual del editor antes de publicar.',
+      })
+    } catch (error) {
+      toast.error('Error al publicar.', {
+        description:
+          error instanceof Error ? error.message : 'No se pudo guardar y publicar la pagina.',
+      })
+    }
   }
 
   const selectedBlock = workingBlocks.find((block) => block.id === selectedBlockId)
   const activeBlock = workingBlocks.find((b) => b.id === activeId)
+  const handleSaveBlock = (blockId: string, data: Block['data']) => {
+    const nextBlocks: Block[] = workingBlocks.map((block) =>
+      block.id === blockId ? ({ ...block, data } as Block) : block,
+    )
+
+    setWorkingBlocks(nextBlocks)
+
+    updateVersion.mutate(
+      { versionId: draft.id, data: { blocks: nextBlocks } },
+      {
+        onSuccess: () => {
+          toast.success('Bloque guardado', {
+            description: 'Los cambios ya se han persistido en el servidor.',
+            duration: 2500,
+          })
+        },
+        onError: (error) => {
+          toast.error('Error al guardar el bloque', {
+            description:
+              error instanceof Error ? error.message : 'No se pudo persistir este bloque.',
+          })
+        },
+      },
+    )
+  }
+  const handleLiveBlockChange = (blockId: string, data: Block['data']) => {
+    updateWorkingBlock(blockId, data)
+  }
+  const handleDeleteSelectedBlock = () => {
+    if (!selectedBlock) return
+    if (!window.confirm('Eliminar este bloque del borrador actual?')) return
+
+    removeWorkingBlock(selectedBlock.id)
+    toast.success('Bloque eliminado del borrador', {
+      description: 'Guarda la pagina o publica para persistir este cambio.',
+    })
+  }
 
   // Dynamic grid column template
   const gridCols = cn(
@@ -247,11 +302,11 @@ export const CmsEditorLayout = () => {
           <Button
             size="sm"
             onClick={handlePublish}
-            disabled={publishVersion.isPending}
+            disabled={publishVersion.isPending || updateVersion.isPending}
             className="h-9 gap-2 rounded-xl px-5 font-bold shadow-md transition-all active:scale-95"
           >
             <Send className="size-4" />
-            {publishVersion.isPending ? 'Publicando...' : 'Publicar'}
+            {publishVersion.isPending || updateVersion.isPending ? 'Publicando...' : 'Publicar'}
           </Button>
         </div>
       </header>
@@ -292,26 +347,37 @@ export const CmsEditorLayout = () => {
                           </span>
                         </div>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 rounded-full hover:bg-surface-container"
-                        onClick={() => setSelectedBlockId(null)}
-                        title="Cerrar inspector"
-                      >
-                        <X className="size-4" />
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-full text-error/70 hover:bg-error/10 hover:text-error"
+                          onClick={handleDeleteSelectedBlock}
+                          title="Eliminar bloque"
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-full hover:bg-surface-container"
+                          onClick={() => setSelectedBlockId(null)}
+                          title="Cerrar inspector"
+                        >
+                          <X className="size-4" />
+                        </Button>
+                      </div>
                     </div>
 
                     <div className="custom-scrollbar flex-1 overflow-y-auto p-6 pb-24">
                       <BlockFormSwitcher
+                        key={selectedBlock.id}
                         block={selectedBlock}
+                        onChange={(data) => {
+                          handleLiveBlockChange(selectedBlock.id, data)
+                        }}
                         onSubmit={(data) => {
-                          updateWorkingBlock(selectedBlock.id, data)
-                          toast.success('Cambios aplicados', {
-                            description: 'La vista previa se ha actualizado.',
-                            duration: 2000,
-                          })
+                          handleSaveBlock(selectedBlock.id, data)
                         }}
                         onCancel={() => setSelectedBlockId(null)}
                       />

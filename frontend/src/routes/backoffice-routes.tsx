@@ -35,6 +35,24 @@ const SettingsPage = lazyNamedRouteComponent(
   },
 )
 
+const SettingsGeneralPage = lazyNamedRouteComponent(
+  () => import('@/features/settings/pages/settings-general-page'),
+  'SettingsGeneralPage',
+  {
+    title: 'Cargando ajustes generales',
+    description: 'Preparando configuracion general del negocio.',
+  },
+)
+
+const SettingsStylesPage = lazyNamedRouteComponent(
+  () => import('@/features/settings/pages/settings-styles-page'),
+  'SettingsStylesPage',
+  {
+    title: 'Cargando estilos',
+    description: 'Preparando paleta y estilos del sitio publico.',
+  },
+)
+
 const CmsPagesPage = lazyNamedRouteComponent(
   () => import('@/features/cms/pages/cms-pages-page'),
   'CmsPagesPage',
@@ -250,6 +268,31 @@ export const buildBackofficeRoutes = (rootRoute: AnyRoute) => {
     getParentRoute: () => backofficeRoute,
     path: 'settings',
     component: SettingsPage,
+  })
+
+  const settingsIndexRoute = createRoute({
+    getParentRoute: () => settingsRoute,
+    path: '/',
+    component: () => {
+      const navigate = settingsRoute.useNavigate()
+      void navigate({
+        to: '/backoffice/settings/general',
+        replace: true,
+      })
+      return null
+    },
+  })
+
+  const settingsGeneralRoute = createRoute({
+    getParentRoute: () => settingsRoute,
+    path: 'general',
+    component: SettingsGeneralPage,
+  })
+
+  const settingsStylesRoute = createRoute({
+    getParentRoute: () => settingsRoute,
+    path: 'styles',
+    component: SettingsStylesPage,
   })
 
   const cmsLayoutRoute = createRoute({
@@ -480,7 +523,11 @@ export const buildBackofficeRoutes = (rootRoute: AnyRoute) => {
 
   return backofficeRoute.addChildren([
     backofficeIndexRoute,
-    settingsRoute,
+    settingsRoute.addChildren([
+      settingsIndexRoute,
+      settingsGeneralRoute,
+      settingsStylesRoute,
+    ]),
     cmsLayoutRoute.addChildren([
       cmsIndexRoute,
       cmsPagesRoute,

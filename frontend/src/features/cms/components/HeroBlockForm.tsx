@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { HeroBlockSchema, type HeroBlockData } from '../schemas/cms.schema';
@@ -8,14 +9,23 @@ import { MediaField } from './MediaField';
 interface Props {
   defaultValues: HeroBlockData;
   onSubmit: (values: HeroBlockData) => void;
+  onChange: (values: HeroBlockData) => void;
   onCancel: () => void;
 }
 
-export const HeroBlockForm = ({ defaultValues, onSubmit, onCancel }: Props) => {
+export const HeroBlockForm = ({ defaultValues, onSubmit, onChange, onCancel }: Props) => {
   const form = useForm<HeroBlockData>({
     resolver: zodResolver(HeroBlockSchema),
     defaultValues,
   });
+
+  useEffect(() => {
+    const subscription = form.watch((values) => {
+      onChange(values as HeroBlockData);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, onChange]);
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-12">
@@ -67,7 +77,7 @@ export const HeroBlockForm = ({ defaultValues, onSubmit, onCancel }: Props) => {
 
       <div className="sticky bottom-[-40px] -mx-10 px-10 py-6 bg-white/95 backdrop-blur-md border-t border-border flex justify-end gap-4 z-10 shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
         <Button type="button" variant="outline" onClick={onCancel} className="px-8 h-11 text-sm font-semibold">Cancelar</Button>
-        <Button type="submit" className="px-10 h-11 text-sm font-bold shadow-primary/20 shadow-lg">Aplicar cambios</Button>
+        <Button type="submit" className="px-10 h-11 text-sm font-bold shadow-primary/20 shadow-lg">Guardar bloque</Button>
       </div>
     </form>
   );

@@ -20,7 +20,11 @@ const getBlockLabel = (block: Block) => {
   switch (block.type) {
     case 'HeroBlock':
     case 'FeatureListBlock':
+    case 'GalleryBlock':
     case 'MenuHighlightsBlock':
+    case 'TestimonialsBlock':
+    case 'VisitInfoBlock':
+    case 'ReservationCtaBlock':
       return block.data.title || 'Sin titulo'
     case 'ContactFormBlock':
       return block.data.heading || 'Sin titulo'

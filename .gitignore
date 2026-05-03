@@ -12,3 +12,7 @@ cookies.txt
 *.bak
 *.orig
 frontend/null
+resources/images/
+scripts/*.ps1
+
+

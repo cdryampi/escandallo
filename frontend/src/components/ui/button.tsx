@@ -5,24 +5,24 @@ import { Slot } from 'radix-ui'
 import { cn } from '@/lib/cn'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 rounded-[var(--ds-radius-default)] border border-transparent text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0',
+  'inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border border-transparent text-[13px] font-semibold transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20 focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:[stroke-width:var(--ds-icon-stroke)]',
   {
     variants: {
       variant: {
         default: 'bg-brand text-brand-foreground hover:bg-brand-strong',
-        secondary: 'bg-surface-subtle text-foreground hover:bg-surface-strong',
+        secondary: 'bg-surface text-foreground border-border hover:bg-surface-elevated hover:border-border-strong',
         outline:
-          'border-border bg-surface-raised text-foreground hover:border-border-strong hover:bg-surface-muted',
-        ghost: 'text-foreground hover:bg-surface-muted',
-        danger: 'bg-danger text-brand-foreground hover:brightness-95',
-        link: 'text-brand underline-offset-4 hover:underline',
+          'border-border bg-transparent text-foreground hover:border-brand/40 hover:text-brand',
+        ghost: 'text-foreground hover:bg-surface',
+        danger: 'border-danger/30 text-danger hover:bg-danger/5',
+        link: 'text-brand underline-offset-4 hover:underline font-semibold tracking-tight',
       },
       size: {
-        default: 'h-10 px-4 py-2',
-        sm: 'h-9 px-3',
-        lg: 'h-11 px-5',
+        default: 'h-10 px-5',
+        sm: 'h-8 px-3 text-xs',
+        lg: 'h-12 px-8 text-sm',
         icon: 'size-10 p-0',
-        'icon-sm': 'size-9 p-0',
+        'icon-sm': 'size-8 p-0',
       },
     },
     defaultVariants: {
